@@ -40,12 +40,15 @@ Example:
       }
       #container {
         max-width: 250px;
+        position: relative;
       }
       input {
         width: 100%;
         font-size: 20px;
       }
       #optionsContainer {
+        position: absolute;
+
         padding: 0;
         width: 100%;
         max-height: 200px;
@@ -107,7 +110,7 @@ Example:
         placeholder: {
           type: String,
           value: ''
-        }
+        },
         _options: {
           type: Array,
           value: function(){ return []; }
