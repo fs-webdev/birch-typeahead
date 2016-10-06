@@ -1,0 +1,220 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../fs-styles/fs-styles.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <birch-typeahead></birch-typeahead>
+
+Example:
+
+    <birch-typeahead>
+      <h2>Hello birch-typeahead</h2>
+    </birch-typeahead>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="birch-typeahead">
+  <template>
+    <style include='fs-styles'></style>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+      }
+      #container {
+        max-width: 250px;
+      }
+      input {
+        width: 100%;
+        font-size: 20px;
+      }
+      #optionsContainer {
+        padding: 0;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        cursor: pointer;
+      }
+      .loading {
+        background-color: #ffffff;
+        background-image: url("http://loadinggif.com/images/image-selection/3.gif");
+        background-size: 25px 25px;
+        background-position:right center;
+        background-repeat: no-repeat;
+      }
+    </style>
+
+    <content></content>
+
+    <div id="container">
+      <input id="input" placeholder="Query" class$="[[_class('loading', loading)]]" on-keydown="_handleKeydown" on-keyup="_handleKeyup" on-blur="_handleBlur"/>
+      <paper-menu id="optionsContainer" hidden="[[_hideOptionsView]]" tabindex="-1">
+        <!-- <template is="dom-repeat" items="[[_options]]">
+          <paper-item on-mouseover="_selectActiveItem" on-tap="_selectActiveItem">
+            <template id="userTemplate" item="[[item]]"></template>
+          </paper-item>
+        </template> -->
+        <template is="dom-repeat" id="userTemplate" items="[[_options]]"></template>
+      </paper-menu>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'birch-typeahead',
+
+      properties: {
+        loading: {
+          type: Boolean,
+          value: false
+        },
+        selectFirstItem: {
+          type: Boolean,
+          valaue: false
+        },
+        _options: {
+          type: Array,
+          value: function(){ return []; }
+        },
+        _inputVal: {
+          type: String,
+          value: ''
+        },
+        _hideOptionsView: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      ready: function(){
+        this.$.userTemplate.templatize(this.querySelector('#birch-typeahead-template'));
+        Polymer.Bind.prepareModel(this.$.userTemplate);
+        Polymer.Base.prepareModelNotifyPath(this.$.userTemplate);
+      },
+
+      setOptions: function(options){
+        if(options && Array.isArray(options) && options.length){
+          this._options = options;
+          if(this.selectFirstItem) this.$.optionsContainer.select(0);
+        }
+      },
+
+      _handleKeydown: function(e){
+        if(!e || !e.which) return;
+        switch(e.which){
+          case 38:  this._handleUpArrow(e);     break;
+          case 40:  this._handleDownArrow(e);   break;
+          case 9:   this._handleTab(e);         break;
+          case 13:  this._handleEnter(e);       break;
+          case 27:  this._handleEscape(e);      break;
+        }
+      },
+
+      _handleKeyup: function(e){
+        if(this.$.input.value.toLowerCase() !== this._inputVal.toLowerCase()){
+          this._inputVal = this.$.input.value;
+          this.fire('birch-typeahead:changed', {value: this._inputVal});
+          console.log('birch-typeahead:changed', {value: this._inputVal})
+          if(!this._inputVal) return this._hideOptions();
+        }
+      },
+
+      _handleUpArrow: function(e){
+        if(this._hideOptionsView) return;
+        e.preventDefault();
+        var optionsMenu = this.$.optionsContainer;
+        var index = Math.max(optionsMenu.selected - 1, 0);
+        optionsMenu.select(index);
+        this.$.input.focus();
+      },
+
+      _handleDownArrow: function(e){
+        if(this._hideOptionsView) return;
+        e.preventDefault();
+        var optionsMenu = this.$.optionsContainer;
+        var index = Math.min(optionsMenu.selected + 1, this._options.length - 1);
+        optionsMenu.select(index);
+        this.$.input.focus();
+      },
+
+      _handleTab: function(e){
+        if(this._hideOptionsView) return;
+        e.preventDefault();
+        this._selectActiveItem();
+      },
+
+      _handleEnter: function(e){
+        this._selectActiveItem();
+      },
+
+      _handleEscape: function(e){
+        this._hideOptions();
+      },
+
+      _handleBlur: function(e){
+        if(!e || !e.relatedTarget) return this._hideOptions();
+        var child = e.relatedTarget;
+        var parent = this.$.optionsContainer;
+        if(parent.contains(child)) return;
+        this._hideOptions();
+      },
+
+      _selectActiveItem: function(e){
+        var index;
+        var optionsMenu = this.$.optionsContainer;
+
+        if(e && e.currentTarget){
+          var selectedItem = e.currentTarget;
+          index = Number(optionsMenu.indexOf(selectedItem));
+        } else {
+          var selectedItem = optionsMenu.selectedItem;
+          index = Number(optionsMenu.indexOf(selectedItem));
+        }
+
+        if(typeof index !== 'number') return;
+        optionsMenu.select(index);
+
+        if(e && e.type === 'mouseover') return;
+        var selection = this._options[index];
+        this._inputVal = selection.customText || selection.standardText || '';
+        this.$.input.value = selection.customText || selection.standardText;
+        selection.customText = this._inputVal;
+        this.fire('birch-typeahead:selected', {selection: selection});
+        console.log('birch-typeahead:selected', {selection: selection});
+        this._hideOptions();
+      },
+
+      _showOptions: function(data){
+        this._options = data;
+        this._hideOptionsView = false;
+      },
+
+      _hideOptions: function(){
+        this._hideOptionsView = true;
+      },
+
+      _class: function(className, bool){
+        return bool ? className : '';
+      },
+
+    });
+  </script>
+</dom-module>

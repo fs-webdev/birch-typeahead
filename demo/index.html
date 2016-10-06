@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>birch-typeahead Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../birch-typeahead.html">
+  </head>
+  <body unresolved>
+
+    <birch-typeahead select-first-item>
+      <template id="birch-typeahead-template">
+
+        <div>[[item.label]]</div>
+
+        <!-- <paper-item>
+          <paper-item-body two-line>
+            <div>Profile Photo</div>
+            <div secondary>[[item.label]]</div>
+          </paper-item-body>
+        </paper-item> -->
+
+      </template>
+    </birch-typeahead>
+
+    <script>
+      var options = [
+        {label: 'Hi there.', standardText: 'Hi there.'},
+        {label: 'How are you doing?', standardText: 'How are you doing?'}
+      ];
+      document.getElementsByTagName('birch-typeahead')[0].setOptions(options);
+    </script>
+
+  </body>
+</html>
