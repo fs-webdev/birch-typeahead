@@ -68,7 +68,7 @@ Example:
     <content>
 
       <template id="defaultTemplate">
-        <div on-tap="_selectActiveItem">[[item.label]]</div>
+        <paper-item on-tap="_selectActiveItem">[[item.label]]</paper-item>
       </template>
 
     </content>
@@ -135,7 +135,10 @@ Example:
       setOptions: function(options){
         if(options && Array.isArray(options) && options.length){
           this._options = options;
-          if(this.highlightFirstItem) this.$.optionsContainer.select(0);
+          if(this.highlightFirstItem){
+            this.$.optionsContainer.select(0);
+            this.$.input.focus();
+          }
         }
       },
 
