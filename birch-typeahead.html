@@ -62,10 +62,16 @@ Example:
       }
     </style>
 
-    <content></content>
+    <content>
+
+      <template id="defaultTemplate">
+        <div on-tap="_selectActiveItem">[[item.label]]</div>
+      </template>
+
+    </content>
 
     <div id="container">
-      <input id="input" placeholder="Query" class$="[[_class('loading', loading)]]" on-keydown="_handleKeydown" on-keyup="_handleKeyup" on-blur="_handleBlur"/>
+      <input id="input" placeholder="[[placeholder]]" class$="[[_class('loading', loading)]]" on-keydown="_handleKeydown" on-keyup="_handleKeyup" on-blur="_handleBlur"/>
       <paper-menu id="optionsContainer" hidden="[[_hideOptionsView]]" tabindex="-1">
         <!-- <template is="dom-repeat" items="[[_options]]">
           <paper-item on-mouseover="_selectActiveItem" on-tap="_selectActiveItem">
@@ -86,10 +92,22 @@ Example:
           type: Boolean,
           value: false
         },
-        selectFirstItem: {
+        typeaheadMode: {
+          type: String,
+          value: 'ajax'
+        },
+        debounceInputDuration: {
+          type: Number,
+          value: 0
+        },
+        highlightFirstItem: {
           type: Boolean,
           valaue: false
         },
+        placeholder: {
+          type: String,
+          value: ''
+        }
         _options: {
           type: Array,
           value: function(){ return []; }
@@ -105,7 +123,8 @@ Example:
       },
 
       ready: function(){
-        this.$.userTemplate.templatize(this.querySelector('#birch-typeahead-template'));
+        var template = this.querySelector('#birch-typeahead-template') || this.$.defaultTemplate;
+        this.$.userTemplate.templatize(template);
         Polymer.Bind.prepareModel(this.$.userTemplate);
         Polymer.Base.prepareModelNotifyPath(this.$.userTemplate);
       },
@@ -113,7 +132,7 @@ Example:
       setOptions: function(options){
         if(options && Array.isArray(options) && options.length){
           this._options = options;
-          if(this.selectFirstItem) this.$.optionsContainer.select(0);
+          if(this.highlightFirstItem) this.$.optionsContainer.select(0);
         }
       },
 
@@ -131,8 +150,10 @@ Example:
       _handleKeyup: function(e){
         if(this.$.input.value.toLowerCase() !== this._inputVal.toLowerCase()){
           this._inputVal = this.$.input.value;
-          this.fire('birch-typeahead:changed', {value: this._inputVal});
-          console.log('birch-typeahead:changed', {value: this._inputVal})
+          this.debounce('birch-typeahead:changed', function(){
+            this.fire('birch-typeahead:changed', {value: this._inputVal});
+            console.log('birch-typeahead:changed', {value: this._inputVal});
+          }.bind(this), this.debounceInputDuration);
           if(!this._inputVal) return this._hideOptions();
         }
       },

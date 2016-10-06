@@ -18,19 +18,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </head>
   <body unresolved>
 
-    <birch-typeahead select-first-item>
+    <birch-typeahead
+      highlight-first-item
+      debounce-input-duration="250">
+
       <template id="birch-typeahead-template">
-
-        <div>[[item.label]]</div>
-
-        <!-- <paper-item>
-          <paper-item-body two-line>
-            <div>Profile Photo</div>
-            <div secondary>[[item.label]]</div>
-          </paper-item-body>
-        </paper-item> -->
-
+        <paper-item on-tap="_selectActiveItem">[[item.label]]</paper-item>
       </template>
+
     </birch-typeahead>
 
     <script>
