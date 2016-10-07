@@ -134,7 +134,7 @@ Example:
 
       setOptions: function(options){
         if(options && Array.isArray(options) && options.length){
-          this._options = options;
+          this._showOptions(options);
           if(this.highlightFirstItem){
             this.$.optionsContainer.select(0);
             this.$.input.focus();
@@ -160,7 +160,7 @@ Example:
             this.fire('birch-typeahead:changed', {value: this._inputVal});
             console.log('birch-typeahead:changed', {value: this._inputVal});
           }.bind(this), this.debounceInputDuration);
-          if(!this._inputVal) return this._hideOptions();
+          if(!this._inputVal) this._hideOptions();
         }
       },
 
@@ -197,7 +197,6 @@ Example:
       },
 
       _handleBlur: function(e){
-        if(!e || !e.relatedTarget) return this._hideOptions();
         var child = e.relatedTarget;
         var parent = this.$.optionsContainer;
         if(parent.contains(child)) return;
@@ -231,7 +230,7 @@ Example:
 
       _showOptions: function(data){
         this._options = data;
-        this._hideOptionsView = false;
+        if(this.$.input === document.activeElement) this._hideOptionsView = false;
       },
 
       _hideOptions: function(){

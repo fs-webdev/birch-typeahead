@@ -18,6 +18,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </head>
   <body unresolved>
 
+    <input id="sessionId" placeholder="Int SessionId"/>
+
+    <br/><br/>
+
     <birch-typeahead
       highlight-first-item
       debounce-input-duration="250">
@@ -28,50 +32,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </birch-typeahead>
 
-    <h2>Testing</h2>
-
-    <h2>Testing Again</h2>
-
     <script>
       var typeahead = document.getElementsByTagName('birch-typeahead')[0];
+      var sessionIdInput = document.getElementById('sessionId');
 
-      document.addEventListener('birch-typeahead:changed', function (e){
-        if(!e || !e.detail || !e.detail.value) return;
-
+      function fetchData(input){
         var uri = 'https://integration.familysearch.org/platform/places/search';
-        var url = uri + '?q=partialName:"' + e.detail.value + '"';
+        var url = uri + '?q=partialName:"' + input + '"';
         var init = {
           headers: {
             'Accept': 'application/json',
-            'Authorization': 'Bearer USYS0FDB25507F7F748CAE0AEE94D6FE5373_idses-int02.a.fsglobal.net'
+            'Authorization': 'Bearer ' + sessionIdInput.value
           }
         }
 
+        return fetch(url, init).then(res => res.json());
+      }
+
+      function mapData(entries){
+        return entries.map(function (item){
+          var info = item.content.gedcomx.places[0];
+          return {
+            id: info.id,
+            label: info.display.fullName,
+            standardText: info.display.fullName,
+            type: info.display.type,
+            customText: null
+          }
+        });
+      }
+
+      typeahead.addEventListener('birch-typeahead:changed', function (e){
+        if(!e || !e.detail || !e.detail.value) return;
+
         typeahead.loading = true;
-        fetch(url, init)
-          .then(res => res.json())
-          .then(function (data){
-            typeahead.loading = false;
-            if (!data || !data.entries) return;
+        fetchData(e.detail.value).then(function (data){
+          typeahead.loading = false;
+          if (!data || !data.entries) return;
 
-
-            var entries = data.entries.map(function (item){
-              var info = item.content.gedcomx.places[0];
-              return {
-                id: info.id,
-                label: info.display.fullName,
-                standardText: info.display.fullName,
-                type: info.display.type,
-                customText: null
-              }
-            });
-
-            if(entries && entries.length){
-              typeahead.setOptions(entries);
-            }
-
-          }.bind(this)
-        );
+          var entries = mapData(data.entries);
+          if(entries && entries.length){
+            typeahead.setOptions(entries);
+          }
+        });
       });
     </script>
 
