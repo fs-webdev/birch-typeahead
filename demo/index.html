@@ -13,6 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>birch-typeahead Demo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
     <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
     <script type="text/javascript">
       window.Polymer = {dom: 'shadow'};
@@ -31,7 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       debounce-input-duration="250">
 
       <template id="birch-typeahead-template">
-        <paper-item>
+        <paper-item on-tap="_selectActiveItem">
           <paper-item-body two-line>
             <div>[[item.label]]</div>
             <div secondary>[[item.type]]</div>
