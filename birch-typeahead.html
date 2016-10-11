@@ -12,6 +12,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../fs-styles/fs-styles.html">
 <link rel="import" href="../paper-menu/paper-menu.html">
 <link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-item/paper-item-body.html">
+<link rel="import" href="../paper-item/paper-icon-item.html">
 
 <!--
 An element providing a solution to no problem in particular.
@@ -23,7 +25,7 @@ Example:
 Example:
 
     <birch-typeahead>
-      <h2>Hello birch-typeahead</h2>
+      <div>[[item.label]]</div>
     </birch-typeahead>
 
 @demo demo/index.html
@@ -32,11 +34,25 @@ Example:
 
 <dom-module id="birch-typeahead">
   <template>
-    <style include='fs-styles'></style>
     <style>
       :host {
         display: block;
         box-sizing: border-box;
+      }
+      ::content * {
+        font-family: verdana !important;
+      };
+      paper-item {
+        --paper-item: {
+          font-family: verdana;
+          @apply(--birch-typeahead-paper-item);
+        }
+      }
+      paper-menu {
+        --paper-menu: {
+          font-family: verdana
+          @apply(--birch-typeahead-paper-menu);
+        }
       }
       #container {
         max-width: 250px;
@@ -48,13 +64,14 @@ Example:
       }
       #optionsContainer {
         position: absolute;
-
         padding: 0;
         width: 100%;
         max-height: 200px;
         overflow-y: scroll;
         overflow-x: hidden;
         cursor: pointer;
+        box-shadow: 0px 5px 10px grey;
+        -webkit-overflow-scrolling: touch;
       }
       .loading {
         background-color: #ffffff;
@@ -65,22 +82,24 @@ Example:
       }
     </style>
 
+    <!-- The content tag allows users to pass in a custom options template -->
     <content>
-
+      <!-- This is the default options template used if the user does not provide an override -->
       <template id="defaultTemplate">
         <paper-item on-tap="_selectActiveItem">[[item.label]]</paper-item>
       </template>
-
     </content>
 
     <div id="container">
-      <input id="input" placeholder="[[placeholder]]" class$="[[_class('loading', loading)]]" on-keydown="_handleKeydown" on-keyup="_handleKeyup" on-blur="_handleBlur"/>
-      <paper-menu id="optionsContainer" hidden="[[_hideOptionsView]]" tabindex="-1">
-        <!-- <template is="dom-repeat" items="[[_options]]">
-          <paper-item on-mouseover="_selectActiveItem" on-tap="_selectActiveItem">
-            <template id="userTemplate" item="[[item]]"></template>
-          </paper-item>
-        </template> -->
+      <input id="input"
+        placeholder="[[placeholder]]"
+        autofocus$="[[autofocus]]"
+        class$="[[_class('loading', loading)]]"
+        on-keydown="_handleKeydown"
+        on-keyup="_handleKeyup"
+        on-focus="_handleFocus"
+        on-blur="_handleBlur"/>
+      <paper-menu id="optionsContainer" tabindex="-1">
         <template is="dom-repeat" id="userTemplate" items="[[_options]]"></template>
       </paper-menu>
     </div>
@@ -95,10 +114,6 @@ Example:
           type: Boolean,
           value: false
         },
-        typeaheadMode: {
-          type: String,
-          value: 'ajax'
-        },
         debounceInputDuration: {
           type: Number,
           value: 0
@@ -111,6 +126,10 @@ Example:
           type: String,
           value: ''
         },
+        autofocus: {
+          type: Boolean,
+          value: false
+        },
         _options: {
           type: Array,
           value: function(){ return []; }
@@ -119,12 +138,16 @@ Example:
           type: String,
           value: ''
         },
-        _hideOptionsView: {
+        _hasFocus: {
           type: Boolean,
-          value: true
+          value: false
         }
       },
 
+      /**
+       * The ready function templatizes either the custom template provided
+       * by the user or the default template within this component.
+       */
       ready: function(){
         var template = this.querySelector('#birch-typeahead-template') || this.$.defaultTemplate;
         this.$.userTemplate.templatize(template);
@@ -132,6 +155,9 @@ Example:
         Polymer.Base.prepareModelNotifyPath(this.$.userTemplate);
       },
 
+      /**
+       * Sets the typeahead options. Accepts an array of objects.
+       */
       setOptions: function(options){
         if(options && Array.isArray(options) && options.length){
           this._showOptions(options);
@@ -158,14 +184,13 @@ Example:
           this._inputVal = this.$.input.value;
           this.debounce('birch-typeahead:changed', function(){
             this.fire('birch-typeahead:changed', {value: this._inputVal});
-            console.log('birch-typeahead:changed', {value: this._inputVal});
           }.bind(this), this.debounceInputDuration);
           if(!this._inputVal) this._hideOptions();
         }
       },
 
       _handleUpArrow: function(e){
-        if(this._hideOptionsView) return;
+        if(!this._options.length) return;
         e.preventDefault();
         var optionsMenu = this.$.optionsContainer;
         var index = Math.max(optionsMenu.selected - 1, 0);
@@ -174,7 +199,7 @@ Example:
       },
 
       _handleDownArrow: function(e){
-        if(this._hideOptionsView) return;
+        if(!this._options.length) return;
         e.preventDefault();
         var optionsMenu = this.$.optionsContainer;
         var index = Math.min(optionsMenu.selected + 1, this._options.length - 1);
@@ -183,7 +208,7 @@ Example:
       },
 
       _handleTab: function(e){
-        if(this._hideOptionsView) return;
+        if(!this._options.length) return;
         e.preventDefault();
         this._selectActiveItem();
       },
@@ -196,10 +221,15 @@ Example:
         this._hideOptions();
       },
 
+      _handleFocus: function(e){
+        this._hasFocus = true;
+      },
+
       _handleBlur: function(e){
         var child = e.relatedTarget;
         var parent = this.$.optionsContainer;
         if(parent.contains(child)) return;
+        this._hasFocus = false;
         this._hideOptions();
       },
 
@@ -224,22 +254,20 @@ Example:
         this.$.input.value = selection.customText || selection.standardText;
         selection.customText = this._inputVal;
         this.fire('birch-typeahead:selected', {selection: selection});
-        console.log('birch-typeahead:selected', {selection: selection});
         this._hideOptions();
       },
 
       _showOptions: function(data){
-        this._options = data;
-        if(this.$.input === document.activeElement) this._hideOptionsView = false;
+        if(this._hasFocus) this._options = data;
       },
 
       _hideOptions: function(){
-        this._hideOptionsView = true;
+        this._options = [];
       },
 
       _class: function(className, bool){
         return bool ? className : '';
-      },
+      }
 
     });
   </script>
