@@ -38,7 +38,9 @@ Example:
       :host {
         display: block;
         box-sizing: border-box;
-      }
+        font-family: verdana;
+        font-size: 14px;
+      };
       ::content * {
         font-family: verdana !important;
       };
@@ -46,21 +48,29 @@ Example:
         --paper-item: {
           font-family: verdana;
           @apply(--birch-typeahead-paper-item);
-        }
+        };
+        --paper-item-selected: {
+          font-weight: 100 !important;
+          background-color: #ecebea;
+        };
       }
       paper-menu {
         --paper-menu: {
           font-family: verdana
           @apply(--birch-typeahead-paper-menu);
-        }
+        };
+      }
+      paper-item-body > * {
+        white-space: normal !important;
+        font-size: 14px !important;
       }
       #container {
-        max-width: 250px;
+        max-width: 300px;
         position: relative;
       }
       input {
         width: 100%;
-        font-size: 20px;
+        font-size: 14px;
       }
       #optionsContainer {
         position: absolute;
