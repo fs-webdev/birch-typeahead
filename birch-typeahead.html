@@ -44,15 +44,18 @@ Example:
       ::content * {
         font-family: verdana !important;
       };
-      paper-item {
+      paper-icon-item, paper-item {
         --paper-item: {
           font-family: verdana;
           @apply(--birch-typeahead-paper-item);
         };
         --paper-item-selected: {
           font-weight: 100 !important;
-          background-color: #ecebea;
+          background-color: #ecebea !important;
+          @apply(--birch-typeahead-paper-item-selected);
         };
+        --paper-item-icon-width: 25px;
+        @apply(--birch-typeahead-paper-item-icon-width);
       }
       paper-menu {
         --paper-menu: {
@@ -60,7 +63,7 @@ Example:
           @apply(--birch-typeahead-paper-menu);
         };
       }
-      paper-item-body > * {
+      paper-item > *, paper-item-body > * {
         white-space: normal !important;
         font-size: 14px !important;
       }
