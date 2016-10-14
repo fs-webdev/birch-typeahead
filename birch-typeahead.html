@@ -296,7 +296,7 @@ Example:
         this._inputVal = selection.customText || selection.standardText || '';
         this.$.input.value = selection.customText || selection.standardText;
         selection.customText = this._inputVal;
-        this.fire('birch-typeahead:selected', {selection: selection});
+        this.fire('birch-typeahead:selected', {selection: selection, options: this._options});
         this._hideOptions();
       },
 
