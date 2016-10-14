@@ -86,7 +86,7 @@ Example:
         overflow-y: scroll;
         overflow-x: hidden;
         cursor: pointer;
-        box-shadow: 0px 5px 10px grey;
+        box-shadow: 0px 5px 10px #bab7b1;
         -webkit-overflow-scrolling: touch;
       }
       .loading {
@@ -102,20 +102,20 @@ Example:
     <content>
       <!-- This is the default options template used if the user does not provide an override -->
       <template id="defaultTemplate">
-        <paper-item on-tap="_selectActiveItem">[[item.label]]</paper-item>
+        <paper-item>[[item.label]]</paper-item>
       </template>
     </content>
 
     <div id="container">
       <input id="input"
-        placeholder="[[placeholder]]"
+        placeholder$="[[placeholder]]"
         autofocus$="[[autofocus]]"
         class$="[[_class('loading', loading)]]"
         on-keydown="_handleKeydown"
         on-keyup="_handleKeyup"
         on-focus="_handleFocus"
         on-blur="_handleBlur"/>
-      <paper-menu id="optionsContainer" tabindex="-1">
+      <paper-menu id="optionsContainer" tabindex="-1" on-tap="_handleTap">
         <template is="dom-repeat" id="userTemplate" items="[[_options]]"></template>
       </paper-menu>
     </div>
@@ -249,6 +249,17 @@ Example:
         this._hideOptions();
       },
 
+      _handleTap: function(e){
+        if(!e || !e.detail || !e.detail.sourceEvent) return;
+        var clicked = e.detail.sourceEvent.currentTarget
+        if(clicked.nodeName === 'PAPER-MENU'){
+          var clicked = e.detail.sourceEvent.srcElement;
+        }
+        if(!clicked) return;
+        var fakeEvent = {currentTarget: clicked};
+        this._selectActiveItem(fakeEvent);
+      },
+
       _selectActiveItem: function(e){
         var index;
         var optionsMenu = this.$.optionsContainer;
@@ -261,7 +272,7 @@ Example:
           index = Number(optionsMenu.indexOf(selectedItem));
         }
 
-        if(typeof index !== 'number') return;
+        if(typeof index !== 'number' || index === -1) return;
         optionsMenu.select(index);
 
         if(e && e.type === 'mouseover') return;
