@@ -44,7 +44,7 @@ Example:
       ::content * {
         font-family: verdana !important;
       };
-      paper-icon-item, paper-item {
+      paper-item, paper-icon-item, paper-item-body {
         --paper-item: {
           font-family: verdana;
           @apply(--birch-typeahead-paper-item);
@@ -102,20 +102,20 @@ Example:
     <content>
       <!-- This is the default options template used if the user does not provide an override -->
       <template id="defaultTemplate">
-        <paper-item on-tap="_selectActiveItem">[[item.label]]</paper-item>
+        <paper-item>[[item.label]]</paper-item>
       </template>
     </content>
 
     <div id="container">
       <input id="input"
-        placeholder="[[placeholder]]"
+        placeholder$="[[placeholder]]"
         autofocus$="[[autofocus]]"
         class$="[[_class('loading', loading)]]"
         on-keydown="_handleKeydown"
         on-keyup="_handleKeyup"
         on-focus="_handleFocus"
         on-blur="_handleBlur"/>
-      <paper-menu id="optionsContainer" tabindex="-1">
+      <paper-menu id="optionsContainer" tabindex="-1" on-tap="_handleTap">
         <template is="dom-repeat" id="userTemplate" items="[[_options]]"></template>
       </paper-menu>
     </div>
@@ -157,6 +157,10 @@ Example:
         _hasFocus: {
           type: Boolean,
           value: false
+        },
+        _usingCustomTemplate: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -165,10 +169,16 @@ Example:
        * by the user or the default template within this component.
        */
       ready: function(){
-        var template = this.querySelector('#birch-typeahead-template') || this.$.defaultTemplate;
+        var template = this.$.defaultTemplate;
+        var customTemplate = this.querySelector('#birch-typeahead-template');
+        if(customTemplate){
+          template = customTemplate;
+          this._usingCustomTemplate = true;
+        }
         this.$.userTemplate.templatize(template);
         Polymer.Bind.prepareModel(this.$.userTemplate);
         Polymer.Base.prepareModelNotifyPath(this.$.userTemplate);
+        this._handleShadyDomSetup();
       },
 
       /**
@@ -249,6 +259,33 @@ Example:
         this._hideOptions();
       },
 
+      _handleTap: function(e){
+        if(!e) return;
+
+        var counter = 0;
+        var el = Polymer.dom(e).rootTarget;
+        if(!this.$.optionsContainer.contains(el)) return;
+
+        // This is necessary to acommidate shady dom.
+        // Find the top-level option element, regardless
+        // of what type of element it is. It allows the
+        // user to not have to pass the on-tap handler.
+        while(el.parentNode){
+          counter++;
+          if(counter === 9) break;
+          var parent = el.parentNode;
+          if(parent.nodeName !== 'PAPER-MENU'
+            && !parent.classList.contains('selectable-content')){
+            el = el.parentNode;
+          } else {
+            break;
+          }
+        }
+
+        var fakeEvent = {currentTarget: el};
+        this._selectActiveItem(fakeEvent);
+      },
+
       _selectActiveItem: function(e){
         var index;
         var optionsMenu = this.$.optionsContainer;
@@ -269,7 +306,7 @@ Example:
         this._inputVal = selection.customText || selection.standardText || '';
         this.$.input.value = selection.customText || selection.standardText;
         selection.customText = this._inputVal;
-        this.fire('birch-typeahead:selected', {selection: selection});
+        this.fire('birch-typeahead:selected', {selection: selection, options: this._options});
         this._hideOptions();
       },
 
@@ -283,6 +320,22 @@ Example:
 
       _class: function(className, bool){
         return bool ? className : '';
+      },
+
+      _handleShadyDomSetup: function(){
+        // Really ugly support for custom, external templates in shady dom.
+        // Only applied if a custom template is provided and shady dom is used.
+        if(!window.Polymer || !window.Polymer.Settings) return;
+        var settings = window.Polymer.Settings;
+        if(this._usingCustomTemplate && !settings.useNativeShadow && !settings.useShadow){
+          this.$.optionsContainer.addEventListener('iron-items-changed', function (e){
+            var items = this.$.optionsContainer.items;
+            for(var i = 0; i < items.length; i++){
+              items[i].classList.add('style-scope', 'birch-typeahead');
+            }
+            Polymer.updateStyles();
+          }.bind(this));
+        }
       }
 
     });
