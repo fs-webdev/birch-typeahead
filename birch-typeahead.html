@@ -86,7 +86,7 @@ Example:
         overflow-y: scroll;
         overflow-x: hidden;
         cursor: pointer;
-        box-shadow: 0px 5px 10px grey;
+        box-shadow: 0px 5px 10px #bab7b1;
         -webkit-overflow-scrolling: touch;
       }
       .loading {
@@ -261,7 +261,7 @@ Example:
           index = Number(optionsMenu.indexOf(selectedItem));
         }
 
-        if(typeof index !== 'number') return;
+        if(typeof index !== 'number' || index === -1) return;
         optionsMenu.select(index);
 
         if(e && e.type === 'mouseover') return;
