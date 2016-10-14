@@ -250,13 +250,29 @@ Example:
       },
 
       _handleTap: function(e){
-        if(!e || !e.detail || !e.detail.sourceEvent) return;
-        var clicked = e.detail.sourceEvent.currentTarget
-        if(clicked.nodeName === 'PAPER-MENU'){
-          var clicked = e.detail.sourceEvent.srcElement;
+        if(!e) return;
+
+        var counter = 0;
+        var el = Polymer.dom(e).rootTarget;
+        if(!this.$.optionsContainer.contains(el)) return;
+
+        // This is necessary to acommidate shady dom.
+        // Find the top-level option element, regardless
+        // of what type of element it is. It allows the
+        // user to not have to pass the on-tap handler.
+        while(el.parentNode){
+          counter++;
+          if(counter === 9) break;
+          var parent = el.parentNode;
+          if(parent.nodeName !== 'PAPER-MENU'
+            && !parent.classList.contains('selectable-content')){
+            el = el.parentNode;
+          } else {
+            break;
+          }
         }
-        if(!clicked) return;
-        var fakeEvent = {currentTarget: clicked};
+
+        var fakeEvent = {currentTarget: el};
         this._selectActiveItem(fakeEvent);
       },
 

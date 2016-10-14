@@ -72,8 +72,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             'Authorization': 'Bearer ' + sessionIdInput.value
           }
         }
-
-        return fetch(url, init).then(res => res.json());
+        return fetch(url, init).then(function(res){return res.json()});
       }
 
       function mapData(entries){
