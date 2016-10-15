@@ -41,12 +41,13 @@ Example:
         font-family: verdana;
         font-size: 14px;
       };
-      ::content * {
+      :host ::content * {
         font-family: verdana !important;
       };
       paper-item, paper-icon-item, paper-item-body {
         --paper-item: {
           font-family: verdana;
+          font-size: 14px;
           @apply(--birch-typeahead-paper-item);
         };
         --paper-item-selected: {
@@ -63,7 +64,7 @@ Example:
           @apply(--birch-typeahead-paper-menu);
         };
       }
-      paper-item > *, paper-item-body > * {
+      paper-item > *, paper-icon-item > *, paper-item-body > * {
         white-space: normal !important;
         font-size: 14px !important;
       }
