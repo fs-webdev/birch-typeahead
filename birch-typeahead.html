@@ -235,8 +235,7 @@ Example:
           var selectedItem = e.currentTarget;
           index = Number(optionsMenu.indexOf(selectedItem));
         } else {
-          var selectedItem = optionsMenu.selectedItem;
-          index = Number(optionsMenu.indexOf(selectedItem));
+          index = optionsMenu.selected;
         }
 
         if(typeof index !== 'number' || index === -1) return;

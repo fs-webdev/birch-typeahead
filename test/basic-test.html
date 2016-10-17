@@ -41,88 +41,74 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el = fixture('birch-typeahead-fixture');
         });
 
-        // test('default template', function() {
-        //   assert.isFalse(el._usingCustomTemplate);
-        // });
+        test('default template', function() {
+          assert.isFalse(el._usingCustomTemplate);
+        });
 
-        // test('_handleEscape', function() {
-        //   el.setOptions([{label: 'label'}]);
-        //   el._handleEscape();
-        //   assert.isTrue(el._options.length === 0);
-        // });
+        test('placeholder', function() {
+          assert.isTrue(el.placeholder === 'Testing');
+        });
 
-        // test('_handleBlur', function (done) {
-        //   el._options = [{label: 'label'}];
-        //   el.$.input.focus();
-        //   el.$.input.blur();
-        //   flush(function(){
-        //     assert.isTrue(el._options.length === 0);
-        //     done();
-        //   });
-        // });
+        test('highlightFirstItem', function() {
+          el.setOptions([{label: 'label'}]);
+          assert.isTrue(el.$.optionsContainer.selected === 0);
+        });
 
-        // test('_hasFocus', function() {
-        //   el.$.input.blur();
-        //   assert.isFalse(el._hasFocus);
-        //   el.$.input.focus();
-        //   assert.isTrue(el._hasFocus);
-        // });
+        test('.setOptions()', function() {
+          el.$.input.blur();
+          assert.isFalse(el._hasFocus);
+          el.$.input.focus();
+          assert.isTrue(el._hasFocus);
+        });
 
-        test('_selectActiveItem enter/tab', function (done) {
+        test('_handleEscape', function() {
+          el.setOptions([{label: 'label'}]);
+          el._handleEscape();
+          assert.isTrue(el._options.length === 0);
+        });
+
+        test('_handleBlur', function (done) {
+          el._options = [{label: 'label'}];
+          el.$.input.focus();
+          el.$.input.blur();
+          flush(function(){
+            assert.isTrue(el._options.length === 0);
+            done();
+          });
+        });
+
+        test('_hasFocus', function() {
+          el.$.input.blur();
+          assert.isFalse(el._hasFocus);
+          el.$.input.focus();
+          assert.isTrue(el._hasFocus);
+        });
+
+        test('_selectActiveItem (enter/tab)', function (done) {
           el.addEventListener('birch-typeahead:selected', function (e){
             assert.isTrue(e.detail.selection.label === 'label');
             done();
           });
+          el.$.input.focus();
           el.setOptions([{label: 'label'}]);
           el._selectActiveItem();
         });
 
-        // test('custom template', function() {
+        test('_selectActiveItem (click/tap)', function (done) {
+          el.addEventListener('birch-typeahead:selected', function (e){
+            assert.isTrue(e.detail.selection.label === 'label');
+            done();
+          });
+          el.$.input.focus();
+          el.setOptions([{label: 'label'}]);
+          var selected = Polymer.dom(el).querySelector('iron-selected');
+          el._selectActiveItem({currentTarget: selected});
+        });
 
-        // });
-
-        // test('number of options set matches number of options available', function() {
-
-        // });
-
-        // test('_selectActiveItem click/tap', function (done) {
-        //   el.addEventListener('birch-typeahead:selected', function (e){
-        //     assert.isTrue(e.detail.selection.label === 'label');
-        //     done();
-        //   });
-        //   el.setOptions([{label: 'label'}]);
-        //   el._selectActiveItem({});
-        // });
-
-        // test('loading', function() {
-
-        // });
-
-        // test('debounceInputDuration', function() {
-
-        // });
-
-        // test('highlightFirstItem', function() {
-
-        // });
-
-        // test('autofocus', function() {
-        //   var activeEl = document.activeElement;
-        //   var isEl = (activeEl === el);
-        //   var isInput = (activeEl === el.$.input);
-        //   assert.isTrue(isEl || isInput);
-        // });
-
-        // test('placeholder', function() {
-        //   assert.isTrue(el.placeholder === 'Testing');
-        // });
-
-        // test('setOptions', function() {
-        //   el.$.input.blur();
-        //   assert.isFalse(el._hasFocus);
-        //   el.$.input.focus();
-        //   assert.isTrue(el._hasFocus);
-        // });
+        test('_class', function() {
+          assert.isTrue(el._class('some-class', true) === 'some-class');
+          assert.isTrue(el._class('some-class', false) === '');
+        });
 
       });
     </script>
