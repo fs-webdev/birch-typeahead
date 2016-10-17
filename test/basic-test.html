@@ -41,8 +41,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el = fixture('birch-typeahead-fixture');
         });
 
-        test('default template', function() {
-          assert.isFalse(el._usingCustomTemplate);
+        // test('default template', function() {
+        //   assert.isFalse(el._usingCustomTemplate);
+        // });
+
+        // test('_handleEscape', function() {
+        //   el.setOptions([{label: 'label'}]);
+        //   el._handleEscape();
+        //   assert.isTrue(el._options.length === 0);
+        // });
+
+        // test('_handleBlur', function (done) {
+        //   el._options = [{label: 'label'}];
+        //   el.$.input.focus();
+        //   el.$.input.blur();
+        //   flush(function(){
+        //     assert.isTrue(el._options.length === 0);
+        //     done();
+        //   });
+        // });
+
+        // test('_hasFocus', function() {
+        //   el.$.input.blur();
+        //   assert.isFalse(el._hasFocus);
+        //   el.$.input.focus();
+        //   assert.isTrue(el._hasFocus);
+        // });
+
+        test('_selectActiveItem enter/tab', function (done) {
+          el.addEventListener('birch-typeahead:selected', function (e){
+            assert.isTrue(e.detail.selection.label === 'label');
+            done();
+          });
+          el.setOptions([{label: 'label'}]);
+          el._selectActiveItem();
         });
 
         // test('custom template', function() {
@@ -53,28 +85,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         // });
 
-        test('_handleEscape', function() {
-          el.setOptions([{label: 'label'}]);
-          el._handleEscape();
-          assert.isTrue(el._options.length === 0);
-        });
-
-        // test('_selectActiveItem enter/tab', function (done) {
-        //   el.addEventListener('birch-typeahead:selected', function (e){
-        //     assert.isTrue(e.detail.selection.label === 'label');
-        //     done();
-        //   });
-        //   el.setOptions([{label: 'label'}]);
-        //   el._selectActiveItem();
-        // });
-
         // test('_selectActiveItem click/tap', function (done) {
         //   el.addEventListener('birch-typeahead:selected', function (e){
         //     assert.isTrue(e.detail.selection.label === 'label');
         //     done();
         //   });
         //   el.setOptions([{label: 'label'}]);
-        //   el._selectActiveItem();
+        //   el._selectActiveItem({});
         // });
 
         // test('loading', function() {
@@ -106,23 +123,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         //   el.$.input.focus();
         //   assert.isTrue(el._hasFocus);
         // });
-
-        test('_handleBlur', function (done) {
-          el._options = [{label: 'label'}];
-          el.$.input.focus();
-          el.$.input.blur();
-          flush(function(){
-            assert.isTrue(el._options.length === 0);
-            done();
-          });
-        });
-
-        test('_hasFocus', function() {
-          el.$.input.blur();
-          assert.isFalse(el._hasFocus);
-          el.$.input.focus();
-          assert.isTrue(el._hasFocus);
-        });
 
       });
     </script>

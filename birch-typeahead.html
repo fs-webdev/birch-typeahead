@@ -244,9 +244,8 @@ Example:
 
         if(e && e.type === 'mouseover') return;
         var selection = this._options[index];
-        this._inputVal = selection.customText || selection.standardText || '';
-        this.$.input.value = selection.customText || selection.standardText;
-        selection.customText = this._inputVal;
+        this._inputVal = selection.label;
+        this.$.input.value = selection.label;
         this.fire('birch-typeahead:selected', {selection: selection, options: this._options});
         this._hideOptions();
       },
