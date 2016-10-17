@@ -26,6 +26,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <template>
         <birch-typeahead
           autofocus
+          highlight-first-item
           placeholder="Testing">
         </birch-typeahead>
       </template>
@@ -52,27 +53,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         // });
 
-        test('hides options on escape', function() {
+        test('_handleEscape', function() {
           el.setOptions([{label: 'label'}]);
           el._handleEscape();
           assert.isTrue(el._options.length === 0);
         });
 
-        // test('selects on enter', function (done) {
+        // test('_selectActiveItem enter/tab', function (done) {
         //   el.addEventListener('birch-typeahead:selected', function (e){
         //     assert.isTrue(e.detail.selection.label === 'label');
-        //     done()
+        //     done();
         //   });
         //   el.setOptions([{label: 'label'}]);
         //   el._selectActiveItem();
         // });
 
-        // test('selects on tab', function() {
-
-        // });
-
-        // test('selects on click', function() {
-
+        // test('_selectActiveItem click/tap', function (done) {
+        //   el.addEventListener('birch-typeahead:selected', function (e){
+        //     assert.isTrue(e.detail.selection.label === 'label');
+        //     done();
+        //   });
+        //   el.setOptions([{label: 'label'}]);
+        //   el._selectActiveItem();
         // });
 
         // test('loading', function() {
