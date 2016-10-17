@@ -24,57 +24,102 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- You can use the document as a place to set up your fixtures. -->
     <test-fixture id="birch-typeahead-fixture">
       <template>
-        <birch-typeahead></birch-typeahead>
+        <birch-typeahead
+          autofocus
+          placeholder="Testing">
+        </birch-typeahead>
       </template>
     </test-fixture>
 
     <script>
       suite('<birch-typeahead>', function() {
 
-        var myEl;
+        var el;
 
         setup(function() {
-          myEl = fixture('birch-typeahead-fixture');
+          el = fixture('birch-typeahead-fixture');
         });
 
         test('default template', function() {
-
+          assert.isFalse(el._usingCustomTemplate);
         });
 
-        test('custom template', function() {
+        // test('custom template', function() {
 
-        });
+        // });
 
-        test('number of options set matches number of options available', function() {
+        // test('number of options set matches number of options available', function() {
 
-        });
-
-        test('hides options on blur', function() {
-
-        });
+        // });
 
         test('hides options on escape', function() {
-
+          el.setOptions([{label: 'label'}]);
+          el._handleEscape();
+          assert.isTrue(el._options.length === 0);
         });
 
-        test('selects on enter', function() {
+        // test('selects on enter', function (done) {
+        //   el.addEventListener('birch-typeahead:selected', function (e){
+        //     assert.isTrue(e.detail.selection.label === 'label');
+        //     done()
+        //   });
+        //   el.setOptions([{label: 'label'}]);
+        //   el._selectActiveItem();
+        // });
 
+        // test('selects on tab', function() {
+
+        // });
+
+        // test('selects on click', function() {
+
+        // });
+
+        // test('loading', function() {
+
+        // });
+
+        // test('debounceInputDuration', function() {
+
+        // });
+
+        // test('highlightFirstItem', function() {
+
+        // });
+
+        // test('autofocus', function() {
+        //   var activeEl = document.activeElement;
+        //   var isEl = (activeEl === el);
+        //   var isInput = (activeEl === el.$.input);
+        //   assert.isTrue(isEl || isInput);
+        // });
+
+        // test('placeholder', function() {
+        //   assert.isTrue(el.placeholder === 'Testing');
+        // });
+
+        // test('setOptions', function() {
+        //   el.$.input.blur();
+        //   assert.isFalse(el._hasFocus);
+        //   el.$.input.focus();
+        //   assert.isTrue(el._hasFocus);
+        // });
+
+        test('_handleBlur', function (done) {
+          el._options = [{label: 'label'}];
+          el.$.input.focus();
+          el.$.input.blur();
+          flush(function(){
+            assert.isTrue(el._options.length === 0);
+            done();
+          });
         });
 
-        test('selects on tab', function() {
-
-        });
-
-        test('selects on click', function() {
-
-        });
-
-        test('autofocus', function() {
-
-        });
-
-        test('loading', function() {
-
+        test('_hasFocus', function() {
+          el.$.input.blur();
+          assert.isFalse(el._hasFocus);
+          el.$.input.focus();
+          assert.isTrue(el._hasFocus);
         });
 
       });

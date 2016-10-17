@@ -109,7 +109,7 @@ Example:
         var template = this.$.defaultTemplate;
         // For now, a user's custom options template must have an id of
         // "birch-typeahead-template" in order to be recognized.
-        var customTemplate = this.querySelector('#birch-typeahead-template');
+        var customTemplate = Polymer.dom(this).querySelector('template');
         if(customTemplate){
           template = customTemplate;
           this._usingCustomTemplate = true;

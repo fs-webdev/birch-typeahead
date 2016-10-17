@@ -16,7 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
     <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
     <script type="text/javascript">
-      // window.Polymer = {dom: 'shadow'};
+      window.Polymer = {dom: 'shadow'};
     </script>
     <link rel="import" href="../birch-typeahead.html">
   </head>
@@ -31,7 +31,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       placeholder="Enter a place"
       debounce-input-duration="250">
 
-      <template id="birch-typeahead-template">
+      <template>
 
         <template is="dom-if" if="[[item.icon]]">
           <paper-icon-item>
