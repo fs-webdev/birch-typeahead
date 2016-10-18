@@ -342,7 +342,7 @@ Custom property | Description | Default
 
       _handleFocus: function(e){
         this._hasFocus = true;
-        if(this.showOptionsOnFocus) this._hideOptions = false;
+        if(this.showOptionsOnFocus && this.$.input.value) this._hideOptions = false;
       },
 
       _handleBlur: function(e){
