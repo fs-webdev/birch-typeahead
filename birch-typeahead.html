@@ -149,6 +149,7 @@ Custom property | Description | Default
        * clicking, or tapping on an item.
        *
        * `detail.selection` is the selected item
+       * `detail.selectionIndex` is the index in `detail.options` at which `detail.selection` can be found
        * `detail.options` is the list of options from which the selected
        *
        * @event birch-typeahead:selected
@@ -360,7 +361,11 @@ Custom property | Description | Default
         var selection = this._options[index];
         this._inputVal = selection.label;
         this.$.input.value = selection.label;
-        this.fire('birch-typeahead:selected', {selection: selection, options: this._options});
+        this.fire('birch-typeahead:selected', {
+          selection: selection,
+          selectionIndex: index,
+          options: this._options
+        });
         this._hideOptions();
       },
 
