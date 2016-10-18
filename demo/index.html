@@ -27,6 +27,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <br/><br/>
 
     <birch-typeahead
+      highlight-first-item
+      show-options-on-focus
       placeholder="Enter a place"
       debounce-input-duration="250">
 
@@ -88,7 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       }
 
-      typeahead.addEventListener('birch-typeahead:changed', function (e){
+      typeahead.addEventListener('birch-typeahead:input', function (e){
         if(!e || !e.detail || !e.detail.value) return;
 
         typeahead.loading = true;
@@ -106,7 +108,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             customText: e.detail.value
           });
           if(entries && entries.length){
-            typeahead.setOptions(entries);
+            typeahead.options = entries;
           }
         });
       });

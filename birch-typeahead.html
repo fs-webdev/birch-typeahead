@@ -19,9 +19,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 A configurable typeahead component optimized for use with `<paper-item>`.
 
 `<birch-typeahead>` has a default configuration. When used as follows,
-simply call `.setOptions(options)` on the element and it will
-display the `option.label` property from each item passed within a
-`<paper-item>`:
+simply set the `options` property on the element and it will display
+the `option.label` property from each item passed within a `<paper-item>`:
 
     <birch-typeahead></birch-typeahead>
 
@@ -112,15 +111,16 @@ Custom property | Description | Default
 
     <div id="container">
       <input id="input"
+        value="{{value::input}}"
         placeholder$="[[placeholder]]"
         autofocus$="[[autofocus]]"
         class$="[[_class('loading', loading)]]"
         on-keydown="_handleKeydown"
-        on-keyup="_handleKeyup"
+        on-input="_handleInput"
         on-focus="_handleFocus"
         on-blur="_handleBlur"/>
-      <paper-menu id="optionsContainer" tabindex="-1" on-tap="_handleTap">
-        <template is="dom-repeat" id="userTemplate" items="[[_options]]"></template>
+      <paper-menu id="optionsContainer" tabindex="-1" on-tap="_handleTap" hidden$="[[_hideOptions]]">
+        <template is="dom-repeat" id="userTemplate" items="[[options]]"></template>
       </paper-menu>
     </div>
   </template>
@@ -134,7 +134,7 @@ Custom property | Description | Default
        *
        * `detail.value` is the input value.
        *
-       * @event birch-typeahead:changed
+       * @event birch-typeahead:input
        */
 
       /**
@@ -156,6 +156,25 @@ Custom property | Description | Default
        */
 
       properties: {
+        /*
+         * The value of the typeahead input. Notifies. Does not debounce.
+         */
+        value: {
+          type: String,
+          value: '',
+          notify: true,
+          observer: '_handleValueChange'
+        },
+
+        /*
+         * The options set to be displayed
+         */
+        options: {
+          type: Array,
+          value: function(){ return []; },
+          observer: '_handleOptionsChange'
+        },
+
         /**
          * Show the loading spinner
          */
@@ -163,13 +182,15 @@ Custom property | Description | Default
           type: Boolean,
           value: false
         },
+
         /**
-         * Debounce firing birch-typeahead:changed in milliseconds
+         * Debounce firing birch-typeahead:input in milliseconds
          */
         debounceInputDuration: {
           type: Number,
           value: 0
         },
+
         /**
          * Whether to always default highlight the first typeahead item.
          * If false, the user can still use the down arrow to get to
@@ -177,8 +198,18 @@ Custom property | Description | Default
          */
         highlightFirstItem: {
           type: Boolean,
-          valaue: false
+          value: false
         },
+
+        /*
+         * Show the options list with the previously available set of
+         * options upon input focus.
+         */
+        showOptionsOnFocus: {
+          type: Boolean,
+          value: false
+        },
+
         /**
          * Input placeholder value
          */
@@ -186,6 +217,7 @@ Custom property | Description | Default
           type: String,
           value: ''
         },
+
         /**
          * Input autofocus value
          */
@@ -193,18 +225,17 @@ Custom property | Description | Default
           type: Boolean,
           value: false
         },
-        _options: {
-          type: Array,
-          value: function(){ return []; }
+
+        _hideOptions: {
+          type: Boolean,
+          value: true
         },
-        _inputVal: {
-          type: String,
-          value: ''
-        },
+
         _hasFocus: {
           type: Boolean,
           value: false
         },
+
         _usingCustomTemplate: {
           type: Boolean,
           value: false
@@ -230,18 +261,26 @@ Custom property | Description | Default
         this._handleShadyDomSetup();
       },
 
-      /**
-       * Sets the typeahead options. Accepts an array of objects.
-       * Passed objects must contain a `label` attribute.
+      /*
+       * Programmatically show the options list and focus the input.
        */
-      setOptions: function(options){
-        if(options && Array.isArray(options) && options.length){
-          this._showOptions(options);
-          if(this.highlightFirstItem){
-            this.$.optionsContainer.select(0);
-            this.$.input.focus();
-          }
+      showOptions: function(){
+        this._hideOptions = false;
+        this.$.input.focus();
+      },
+
+      _handleValueChange: function(value){
+        if(!value) this._hideOptions = true;
+      },
+
+      _handleOptionsChange: function(options){
+        if(options.length && this.highlightFirstItem){
+          this.$.optionsContainer.select(0);
+        } else {
+          this.$.optionsContainer.select(-1);
         }
+        this.$.input.focus();
+        this._hideOptionsAndBlur(false);
       },
 
       _handleKeydown: function(e){
@@ -255,20 +294,15 @@ Custom property | Description | Default
         }
       },
 
-      _handleKeyup: function(e){
-        // Prevent execution if this keypress was already handled
-        if(e && e.which && ~[38, 40, 9, 13, 27].indexOf(e.which)) return;
-        if(this.$.input.value.toLowerCase() !== this._inputVal.toLowerCase()){
-          this._inputVal = this.$.input.value;
-          this.debounce('birch-typeahead:changed', function(){
-            this.fire('birch-typeahead:changed', {value: this._inputVal});
-          }.bind(this), this.debounceInputDuration);
-          if(!this._inputVal) this._hideOptions();
-        }
+      _handleInput: function(e){
+        this.debounce('birch-typeahead:input', function(){
+          this.fire('birch-typeahead:input', {value: this.value});
+        }.bind(this), this.debounceInputDuration);
+        if(!this.value) this._hideOptionsAndBlur(true);
       },
 
       _handleUpArrow: function(e){
-        if(!this._options.length) return;
+        if(this._hideOptions) return;
         e.preventDefault();
         var optionsMenu = this.$.optionsContainer;
         var index = Math.max(optionsMenu.selected - 1, 0);
@@ -277,42 +311,43 @@ Custom property | Description | Default
       },
 
       _handleDownArrow: function(e){
-        if(!this._options.length) return;
+        if(this._hideOptions) return;
         e.preventDefault();
         var optionsMenu = this.$.optionsContainer;
         var index = 0;
         if(typeof optionsMenu.selected === 'number'){
-          index = Math.min(optionsMenu.selected + 1, this._options.length - 1);
+          index = Math.min(optionsMenu.selected + 1, this.options.length - 1);
         }
         optionsMenu.select(index);
         this.$.input.focus();
       },
 
       _handleTab: function(e){
-        if(!this._options.length) return;
+        if(this._hideOptions) return;
         e.preventDefault();
         this._selectActiveItem();
       },
 
       _handleEnter: function(e){
+        if(this._hideOptions) return;
         this._selectActiveItem();
       },
 
       _handleEscape: function(e){
-        this._hideOptions();
+        this._hideOptionsAndBlur(true);
         this.fire('birch-typeahead:cancel');
       },
 
       _handleFocus: function(e){
         this._hasFocus = true;
+        if(this.showOptionsOnFocus) this._hideOptions = false;
       },
 
       _handleBlur: function(e){
         var child = e.relatedTarget;
         var parent = this.$.optionsContainer;
         if(parent.contains(child)) return;
-        this._hasFocus = false;
-        this._hideOptions();
+        this._hideOptionsAndBlur(true);
         this.fire('birch-typeahead:cancel');
       },
 
@@ -358,23 +393,19 @@ Custom property | Description | Default
         optionsMenu.select(index);
 
         if(e && e.type === 'mouseover') return;
-        var selection = this._options[index];
-        this._inputVal = selection.label;
-        this.$.input.value = selection.label;
+        var selection = this.options[index];
+        this.value = selection.label;
         this.fire('birch-typeahead:selected', {
           selection: selection,
           selectionIndex: index,
-          options: this._options
+          options: this.options
         });
-        this._hideOptions();
+        this._hideOptionsAndBlur(true);
       },
 
-      _showOptions: function(data){
-        if(this._hasFocus) this._options = data;
-      },
-
-      _hideOptions: function(){
-        this._options = [];
+      _hideOptionsAndBlur: function(hide){
+        if(hide) this._hasFocus = false;
+        this._hideOptions = hide;
       },
 
       _class: function(className, bool){

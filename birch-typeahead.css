@@ -71,3 +71,7 @@ input {
   background-position:right center;
   background-repeat: no-repeat;
 }
+
+*[hidden] {
+  display: none;
+}
