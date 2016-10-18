@@ -145,6 +145,13 @@ Custom property | Description | Default
        */
 
       /**
+       * Fired when the user tabs or clicks away from the
+       * input.
+       *
+       * @event birch-typeahead:blur
+       */
+
+      /**
        * Fired when the user selects an option by pressing enter, tab,
        * clicking, or tapping on an item.
        *
@@ -162,8 +169,7 @@ Custom property | Description | Default
         value: {
           type: String,
           value: '',
-          notify: true,
-          observer: '_handleValueChange'
+          notify: true
         },
 
         /*
@@ -269,8 +275,11 @@ Custom property | Description | Default
         this.$.input.focus();
       },
 
-      _handleValueChange: function(value){
-        if(!value) this._hideOptions = true;
+      _handleInput: function(){
+        if(!this.$.input.value) this._hideOptions = true;
+        this.debounce('birch-typeahead:input', function(){
+          this.fire('birch-typeahead:input', {value: this.$.input.value});
+        }.bind(this), this.debounceInputDuration);
       },
 
       _handleOptionsChange: function(options){
@@ -292,13 +301,6 @@ Custom property | Description | Default
           case 13:  this._handleEnter(e);       break;
           case 27:  this._handleEscape(e);      break;
         }
-      },
-
-      _handleInput: function(e){
-        this.debounce('birch-typeahead:input', function(){
-          this.fire('birch-typeahead:input', {value: this.value});
-        }.bind(this), this.debounceInputDuration);
-        if(!this.value) this._hideOptionsAndBlur(true);
       },
 
       _handleUpArrow: function(e){
@@ -348,7 +350,7 @@ Custom property | Description | Default
         var parent = this.$.optionsContainer;
         if(parent.contains(child)) return;
         this._hideOptionsAndBlur(true);
-        this.fire('birch-typeahead:cancel');
+        this.fire('birch-typeahead:blur');
       },
 
       _handleTap: function(e){

@@ -50,31 +50,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('highlightFirstItem', function() {
-          el.setOptions([{label: 'label'}]);
+          el.options = [{label: 'label'}];
           assert.isTrue(el.$.optionsContainer.selected === 0);
-        });
-
-        test('.setOptions()', function() {
-          el.$.input.blur();
-          assert.isFalse(el._hasFocus);
-          el.$.input.focus();
-          assert.isTrue(el._hasFocus);
-        });
-
-        test('_handleEscape', function() {
-          el.setOptions([{label: 'label'}]);
-          el._handleEscape();
-          assert.isTrue(el._options.length === 0);
-        });
-
-        test('_handleBlur', function (done) {
-          el._options = [{label: 'label'}];
-          el.$.input.focus();
-          el.$.input.blur();
-          flush(function(){
-            assert.isTrue(el._options.length === 0);
-            done();
-          });
         });
 
         test('_hasFocus', function() {
@@ -84,13 +61,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.isTrue(el._hasFocus);
         });
 
+        test('_handleEscape', function() {
+          el.options = [{label: 'label'}];
+          el._handleEscape();
+          assert.isTrue(el._hideOptions);
+        });
+
+        test('_handleBlur', function (done) {
+          el._options = [{label: 'label'}];
+          el.$.input.focus();
+          el.$.input.blur();
+          flush(function(){
+            assert.isTrue(el._hideOptions);
+            done();
+          });
+        });
+
         test('_selectActiveItem (enter/tab)', function (done) {
           el.addEventListener('birch-typeahead:selected', function (e){
             assert.isTrue(e.detail.selection.label === 'label');
             done();
           });
           el.$.input.focus();
-          el.setOptions([{label: 'label'}]);
+          el.options = [{label: 'label'}];
           el._selectActiveItem();
         });
 
@@ -100,7 +93,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             done();
           });
           el.$.input.focus();
-          el.setOptions([{label: 'label'}]);
+          el.options = [{label: 'label'}];
           var selected = Polymer.dom(el).querySelector('iron-selected');
           el._selectActiveItem({currentTarget: selected});
         });
@@ -108,6 +101,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('_class', function() {
           assert.isTrue(el._class('some-class', true) === 'some-class');
           assert.isTrue(el._class('some-class', false) === '');
+        });
+
+        test('showOptions', function() {
+          el._hideOptions = true;
+          el.showOptions();
+          assert.isFalse(el._hideOptions);
+          assert.isTrue(el._hasFocus);
         });
 
       });
