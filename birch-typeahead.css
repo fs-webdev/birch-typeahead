@@ -43,6 +43,8 @@ paper-item > *, paper-icon-item > *, paper-item-body > * {
 #container {
   max-width: 300px;
   position: relative;
+  z-index: 200;
+  @apply(--birch-typeahead-options-z-index);
 }
 
 input {

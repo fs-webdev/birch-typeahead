@@ -16,17 +16,84 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../paper-item/paper-icon-item.html">
 
 <!--
-An element providing a solution to no problem in particular.
+A configurable typeahead component optimized for use with `<paper-item>`.
 
-Example:
+`<birch-typeahead>` has a default configuration. When used as follows,
+simply call `.setOptions(options)` on the element and it will
+display the `option.label` property from each item passed within a
+`<paper-item>`:
 
     <birch-typeahead></birch-typeahead>
 
-Example:
+You can use any of the `<paper-item>` configurations shown in paper-itme's
+docs:
 
     <birch-typeahead>
-      <div>[[item.label]]</div>
+      <template>
+        <paper-item>
+          <paper-item-body two-line>
+            <div>[[item.label]]</div>
+            <div secondary>[[item.description]]</div>
+          </paper-item-body>
+        </paper-item>
+      </template>
     </birch-typeahead>
+
+You can also use custom markup:
+
+    <birch-typeahead>
+      <template>
+        <div>[[item.label]]</div>
+      </template>
+    </birch-typeahead>
+
+
+Advanced usage:
+
+    <birch-typeahead
+      placeholder="Enter a place"
+      debounce-input-duration="250">
+
+      <template>
+
+        <template is="dom-if" if="[[item.icon]]">
+          <paper-icon-item>
+            <iron-icon item-icon>
+              <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="11" height="16" viewBox="0 0 11 16"><title>Artboard 1</title><path d="M5.5,15.79a.39.39,0,0,1-.37-.24.36.36,0,0,1,0-.13A7.49,7.49,0,0,0,2.9,10.31c-.37-.44-.79-.94-1.27-1.57L1.4,8.42a5,5,0,0,1-1-3.08,5.13,5.13,0,1,1,10.27,0,5.08,5.08,0,0,1-1,3.08l-.24.32h0c-.48.63-.9,1.13-1.27,1.57a7.46,7.46,0,0,0-2.21,5.08A.39.39,0,0,1,5.5,15.79ZM5.5,3a2,2,0,1,0,2,2A2,2,0,0,0,5.5,3Z" style="fill:#333331"/><rect width="11" height="16" style="fill:none"/></svg>
+            </iron-icon>
+            <paper-item-body two-line>
+              <div>[[item.label]]</div>
+              <div secondary>[[item.type]]</div>
+            </paper-item-body>
+          </paper-icon-item>
+        </template>
+
+        <template is="dom-if" if="[[!item.icon]]">
+          <paper-icon-item>
+            <iron-icon item-icon></iron-icon>
+            <paper-item-body two-line>
+              <div>[[item.label]]</div>
+              <div secondary>[[item.type]]</div>
+            </paper-item-body>
+          </paper-icon-item>
+        </template>
+
+      </template>
+
+    </birch-typeahead>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--birch-typeahead-paper-item`              | Pass through `--paper-item`            | `{}`
+`--birch-typeahead-paper-item-selected`     | Pass through `--paper-item-selected`   | `{}`
+`--birch-typeahead-paper-item-icon-width`   | Pass through `--paper-item-icon-width` | `25px`
+`--birch-typeahead-paper-menu`              | Pass through `--paper-menu`            | `{}`
+`--birch-typeahead-input`                   | Style birch-typeahead's input          | `{}`
+`--birch-typeahead-options-z-index`         | z-index for the options paper-menu     | `200`
 
 @demo demo/index.html
 @hero hero.svg
@@ -62,23 +129,65 @@ Example:
     Polymer({
       is: 'birch-typeahead',
 
+      /**
+       * Fired when the user changes the input value with a keypress.
+       *
+       * `detail.value` is the input value.
+       *
+       * @event birch-typeahead:changed
+       */
+
+      /**
+       * Fired when the user presses escape or clicks away from the
+       * input without selecting an item.
+       *
+       * @event birch-typeahead:cancel
+       */
+
+      /**
+       * Fired when the user selects an option by pressing enter, tab,
+       * clicking, or tapping on an item.
+       *
+       * `detail.selection` is the selected item
+       * `detail.options` is the list of options from which the selected
+       *
+       * @event birch-typeahead:selected
+       */
+
       properties: {
+        /**
+         * Show the loading spinner
+         */
         loading: {
           type: Boolean,
           value: false
         },
+        /**
+         * Debounce firing birch-typeahead:changed in milliseconds
+         */
         debounceInputDuration: {
           type: Number,
           value: 0
         },
+        /**
+         * Whether to always default highlight the first typeahead item.
+         * If false, the user can still use the down arrow to get to
+         * the first item listed.
+         */
         highlightFirstItem: {
           type: Boolean,
           valaue: false
         },
+        /**
+         * Input placeholder value
+         */
         placeholder: {
           type: String,
           value: ''
         },
+        /**
+         * Input autofocus value
+         */
         autofocus: {
           type: Boolean,
           value: false
@@ -145,6 +254,8 @@ Example:
       },
 
       _handleKeyup: function(e){
+        // Prevent execution if this keypress was already handled
+        if(e && e.which && ~[38, 40, 9, 13, 27].indexOf(e.which)) return;
         if(this.$.input.value.toLowerCase() !== this._inputVal.toLowerCase()){
           this._inputVal = this.$.input.value;
           this.debounce('birch-typeahead:changed', function(){
@@ -167,7 +278,10 @@ Example:
         if(!this._options.length) return;
         e.preventDefault();
         var optionsMenu = this.$.optionsContainer;
-        var index = Math.min(optionsMenu.selected + 1, this._options.length - 1);
+        var index = 0;
+        if(typeof optionsMenu.selected === 'number'){
+          index = Math.min(optionsMenu.selected + 1, this._options.length - 1);
+        }
         optionsMenu.select(index);
         this.$.input.focus();
       },
