@@ -283,6 +283,7 @@ Custom property | Description | Default
       },
 
       _handleOptionsChange: function(options){
+        if(!this.$.input.value) return;
         if(options.length && this.highlightFirstItem){
           this.$.optionsContainer.select(0);
         } else {
