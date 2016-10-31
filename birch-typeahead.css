@@ -43,8 +43,6 @@ paper-item > *, paper-icon-item > *, paper-item-body > * {
 #container {
   max-width: 300px;
   position: relative;
-  z-index: 200;
-  @apply(--birch-typeahead-options-z-index);
 }
 
 input {
@@ -62,6 +60,8 @@ input {
   cursor: pointer;
   box-shadow: 0px 5px 10px #bab7b1;
   -webkit-overflow-scrolling: touch;
+  z-index: 200;
+  @apply(--birch-typeahead-options-z-index);
 }
 
 .loading {
