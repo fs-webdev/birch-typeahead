@@ -254,8 +254,6 @@ Custom property | Description | Default
        */
       ready: function(){
         var template = this.$.defaultTemplate;
-        // For now, a user's custom options template must have an id of
-        // "birch-typeahead-template" in order to be recognized.
         var customTemplate = Polymer.dom(this).querySelector('template');
         if(customTemplate){
           template = customTemplate;
