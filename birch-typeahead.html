@@ -124,7 +124,7 @@ Custom property | Description | Default
         on-keydown="_handleKeydown"
         on-input="_handleInput"
         on-focus="_handleFocus"
-        on-blur="_handleBlur"/>
+        on-focusout="_handleFocusout"/>
       <paper-menu id="optionsContainer" tabindex="-1" on-tap="_handleTap" hidden$="[[_hideOptions]]">
         <template is="dom-repeat" id="userTemplate" items="[[options]]"></template>
       </paper-menu>
@@ -350,7 +350,8 @@ Custom property | Description | Default
         if(this.showOptionsOnFocus && this.$.input.value) this._hideOptions = false;
       },
 
-      _handleBlur: function(e){
+      // Have to use focusout event becuase IE11's blur event doesn't have e.relatedTarget
+      _handleFocusout: function(e){
         var child = e.relatedTarget;
         var parent = this.$.optionsContainer;
         if(parent.contains(child)) return;
