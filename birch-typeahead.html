@@ -318,6 +318,7 @@ Custom property | Description | Default
       },
 
       _handleDownArrow: function(e){
+        if(this._hideOptions && this.options.length) return this._hideOptions = false;
         if(this._hideOptions) return;
         e.preventDefault();
         var optionsMenu = this.$.optionsContainer;
