@@ -222,6 +222,11 @@ Custom property | Description | Default
           value: false
         },
 
+        followTabindexAfterTabSelect: {
+          type: Boolean,
+          value: false
+        },
+
         /**
          * Input placeholder value
          */
@@ -332,7 +337,9 @@ Custom property | Description | Default
 
       _handleTab: function(e){
         if(this._hideOptions) return;
-        e.preventDefault();
+        if(!this.followTabindexAfterTabSelect){
+          e.preventDefault();
+        }
         this._selectActiveItem();
       },
 
