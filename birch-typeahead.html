@@ -222,6 +222,11 @@ Custom property | Description | Default
           value: false
         },
 
+        followTabindexAfterTabSelect: {
+          type: Boolean,
+          value: false
+        },
+
         /**
          * Input placeholder value
          */
@@ -279,6 +284,16 @@ Custom property | Description | Default
         this.$.input.focus();
       },
 
+      /*
+       * Programmatically hide the options list and blur the input.
+       *
+       * @param hide
+       */
+      hideOptionsAndBlur: function(hide){
+        if(hide) this._hasFocus = false;
+        this._hideOptions = hide;
+      },
+
       _handleInput: function(){
         if(!this.$.input.value) this._hideOptions = true;
         this.debounce('birch-typeahead:input', function(){
@@ -294,7 +309,7 @@ Custom property | Description | Default
           this.$.optionsContainer.select(-1);
         }
         this.$.input.focus();
-        this._hideOptionsAndBlur(false);
+        this.hideOptionsAndBlur(false);
       },
 
       _handleKeydown: function(e){
@@ -318,7 +333,13 @@ Custom property | Description | Default
       },
 
       _handleDownArrow: function(e){
-        if(this._hideOptions) return;
+        if(this._hideOptions){
+          if(this.options.length){
+            e.preventDefault();
+            this._hideOptions = false;
+          }
+          return;
+        }
         e.preventDefault();
         var optionsMenu = this.$.optionsContainer;
         var index = 0;
@@ -331,7 +352,9 @@ Custom property | Description | Default
 
       _handleTab: function(e){
         if(this._hideOptions) return;
-        e.preventDefault();
+        if(!this.followTabindexAfterTabSelect){
+          e.preventDefault();
+        }
         this._selectActiveItem();
       },
 
@@ -341,7 +364,7 @@ Custom property | Description | Default
       },
 
       _handleEscape: function(e){
-        this._hideOptionsAndBlur(true);
+        this.hideOptionsAndBlur(true);
         this.fire('birch-typeahead:cancel');
       },
 
@@ -355,7 +378,7 @@ Custom property | Description | Default
         var child = e.relatedTarget;
         var parent = this.$.optionsContainer;
         if(parent.contains(child)) return;
-        this._hideOptionsAndBlur(true);
+        this.hideOptionsAndBlur(true);
         this.fire('birch-typeahead:blur');
       },
 
@@ -408,12 +431,7 @@ Custom property | Description | Default
           selectionIndex: index,
           options: this.options
         });
-        this._hideOptionsAndBlur(true);
-      },
-
-      _hideOptionsAndBlur: function(hide){
-        if(hide) this._hasFocus = false;
-        this._hideOptions = hide;
+        this.hideOptionsAndBlur(true);
       },
 
       _class: function(className, bool){
