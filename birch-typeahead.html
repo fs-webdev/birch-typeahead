@@ -364,6 +364,7 @@ Custom property | Description | Default
       },
 
       _handleEscape: function(e){
+        e.preventDefault();
         this.hideOptionsAndBlur(true);
         this.fire('birch-typeahead:cancel');
       },
