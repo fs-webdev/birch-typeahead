@@ -364,9 +364,8 @@ Custom property | Description | Default
       },
 
       _handleEscape: function(e){
-        e.preventDefault();
-        this.hideOptionsAndBlur(true);
         this.fire('birch-typeahead:cancel');
+        this.hideOptionsAndBlur(true);
       },
 
       _handleFocus: function(e){
@@ -379,8 +378,8 @@ Custom property | Description | Default
         var child = e.relatedTarget;
         var parent = this.$.optionsContainer;
         if(parent.contains(child)) return;
-        this.hideOptionsAndBlur(true);
         this.fire('birch-typeahead:blur');
+        this.hideOptionsAndBlur(true);
       },
 
       _handleTap: function(e){
