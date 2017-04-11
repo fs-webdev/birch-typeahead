@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/FamilySearchElements/birch-typeahead.svg?branch=master)](https://travis-ci.org/FamilySearchElements/birch-typeahead)
+
 # birch-typeahead
 
 An element providing a starting point for your own reusable Polymer elements.
