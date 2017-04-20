@@ -50,15 +50,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('highlightFirstItem', function() {
+          el.$.input.value = 'Testing';
           el.options = [{label: 'label'}];
           assert.isTrue(el.$.optionsContainer.selected === 0);
         });
 
         test('_hasFocus', function() {
-          el.$.input.blur();
-          assert.isFalse(el._hasFocus);
-          el.$.input.focus();
-          assert.isTrue(el._hasFocus);
+          flush(function() {
+            el.$.input.focus();
+            assert.isTrue(el._hasFocus);  
+          });
         });
 
         test('_handleEscape', function() {
@@ -67,13 +68,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.isTrue(el._hideOptions);
         });
 
-        test('_handleBlur', function (done) {
+        test('_handleBlur', function () {
           el._options = [{label: 'label'}];
           el.$.input.focus();
-          el.$.input.blur();
+          
           flush(function(){
+            el.$.input.blur();
             assert.isTrue(el._hideOptions);
-            done();
           });
         });
 
@@ -83,6 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             done();
           });
           el.$.input.focus();
+          el.$.input.value = 'testing';
           el.options = [{label: 'label'}];
           el._selectActiveItem();
         });
@@ -93,6 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             done();
           });
           el.$.input.focus();
+          el.$.input.value = 'testing';
           el.options = [{label: 'label'}];
           var selected = Polymer.dom(el).querySelector('iron-selected');
           el._selectActiveItem({currentTarget: selected});
@@ -106,8 +109,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('showOptions', function() {
           el._hideOptions = true;
           el.showOptions();
-          assert.isFalse(el._hideOptions);
-          assert.isTrue(el._hasFocus);
+          flush(function(){
+            assert.isFalse(el._hideOptions);
+            assert.isTrue(el._hasFocus);
+          })
         });
 
       });
