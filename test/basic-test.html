@@ -41,10 +41,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el = fixture('birch-typeahead-fixture');
         });
 
-        test('default template', function() {
-          assert.isFalse(el._usingCustomTemplate);
-        });
-
         test('placeholder', function() {
           assert.isTrue(el.placeholder === 'Testing');
         });
@@ -53,13 +49,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el.$.input.value = 'Testing';
           el.options = [{label: 'label'}];
           assert.isTrue(el.$.optionsContainer.selected === 0);
-        });
-
-        test('_hasFocus', function() {
-          flush(function() {
-            el.$.input.focus();
-            assert.isTrue(el._hasFocus);  
-          });
         });
 
         test('_handleEscape', function() {
@@ -71,11 +60,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('_handleBlur', function () {
           el._options = [{label: 'label'}];
           el.$.input.focus();
-          
-          flush(function(){
-            el.$.input.blur();
-            assert.isTrue(el._hideOptions);
-          });
+          el.$.input.blur();
+          Polymer.dom.flush();
+          assert.isTrue(el._hideOptions);
         });
 
         test('_selectActiveItem (enter/tab)', function (done) {
@@ -83,10 +70,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.isTrue(e.detail.selection.label === 'label');
             done();
           });
-          el.$.input.focus();
           el.$.input.value = 'testing';
           el.options = [{label: 'label'}];
-          el._selectActiveItem();
+          el._selectActiveItem();          
         });
 
         test('_selectActiveItem (click/tap)', function (done) {
@@ -94,11 +80,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.isTrue(e.detail.selection.label === 'label');
             done();
           });
-          el.$.input.focus();
           el.$.input.value = 'testing';
           el.options = [{label: 'label'}];
-          var selected = Polymer.dom(el).querySelector('iron-selected');
-          el._selectActiveItem({currentTarget: selected});
+            var selected = Polymer.dom(el).querySelector('iron-selected');
+            el._selectActiveItem({currentTarget: selected});  
         });
 
         test('_class', function() {
@@ -109,10 +94,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('showOptions', function() {
           el._hideOptions = true;
           el.showOptions();
-          flush(function(){
-            assert.isFalse(el._hideOptions);
-            assert.isTrue(el._hasFocus);
-          })
+          assert.isFalse(el._hideOptions);
         });
 
       });
