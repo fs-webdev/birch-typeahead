@@ -97,6 +97,7 @@ Custom property | Description | Default
 `--birch-typeahead-paper-item-icon-width`   | Pass through `--paper-item-icon-width` | `25px`
 `--birch-typeahead-paper-menu`              | Pass through `--paper-menu`            | `{}`
 `--birch-typeahead-input`                   | Style birch-typeahead's input          | `{}`
+`--birch-typeahead-input-disabled`          | Style birch-typeahead's input when disabled         | `{}`
 `--birch-typeahead-options-z-index`         | z-index for the options paper-menu     | `200`
 
 @demo demo/index.html
@@ -120,6 +121,7 @@ Custom property | Description | Default
         value="{{value::input}}"
         placeholder$="[[placeholder]]"
         autofocus$="[[autofocus]]"
+        disabled$="[[disabled]]"
         class$="[[_class('loading', loading)]]"
         on-keydown="_handleKeydown"
         on-input="_handleInput"
@@ -239,6 +241,15 @@ Custom property | Description | Default
          * Input autofocus value
          */
         autofocus: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Input's disabled value.
+         * @type {Boolean}
+         */
+        disabled: {
           type: Boolean,
           value: false
         },

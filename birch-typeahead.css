@@ -40,6 +40,10 @@ paper-item > *, paper-icon-item > *, paper-item-body > * {
   @apply(--birch-typeahead-input);
 }
 
+#input[disabled] {
+  @apply --birch-typeahead-input-disabled;
+}
+
 #container {
   max-width: 300px;
   position: relative;
