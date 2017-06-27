@@ -371,12 +371,14 @@ Custom property | Description | Default
 
       _handleEnter: function(e){
         if(this._hideOptions) return;
+        e.preventDefault();
         this._selectActiveItem();
       },
 
       _handleEscape: function(e){
-        this.fire('birch-typeahead:cancel');
+        if(!this._hideOptions) e.stopPropagation();
         this.hideOptionsAndBlur(true);
+        this.fire('birch-typeahead:cancel');
       },
 
       _handleFocus: function(e){
