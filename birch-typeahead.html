@@ -377,8 +377,8 @@ Custom property | Description | Default
 
       _handleEscape: function(e){
         if(!this._hideOptions) e.stopPropagation();
-        this.hideOptionsAndBlur(true);
         this.fire('birch-typeahead:cancel');
+        this.hideOptionsAndBlur(true);
       },
 
       _handleFocus: function(e){
