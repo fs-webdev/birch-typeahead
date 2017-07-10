@@ -454,14 +454,6 @@ Custom property | Description | Default
 
         if(typeof index !== 'number' || index === -1) return;
         optionsMenu.selected = index;
-        
-        // Handle the scrolling
-        if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
-          optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop;
-        } 
-        else if (optionsMenu.scrollTop + optionsMenu.offsetHeight < optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight) {
-          optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight - optionsMenu.offsetHeight;
-        }
 
         if(e && e.type === 'mouseover') return;
         var selection = this.options[index];
@@ -472,6 +464,14 @@ Custom property | Description | Default
           options: this.options
         });
         this.hideOptionsAndBlur(true);
+        
+        // Handle the scrolling
+        if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
+          optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop;
+        } 
+        else if (optionsMenu.scrollTop + optionsMenu.offsetHeight < optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight) {
+          optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight - optionsMenu.offsetHeight;
+        }
       },
 
       _class: function(className, bool){
