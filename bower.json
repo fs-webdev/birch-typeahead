@@ -20,8 +20,8 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.2.0",
     "fs-styles": "fs-webdev/fs-styles#fontStack",
-    "paper-menu": "^1.2.2",
-    "paper-item": "^1.2.1"
+    "paper-item": "^1.2.1",
+    "paper-listbox": "^2.0.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

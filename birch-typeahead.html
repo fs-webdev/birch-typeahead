@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../fs-styles/fs-styles.html">
-<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../paper-item/paper-item-body.html">
 <link rel="import" href="../paper-item/paper-icon-item.html">
@@ -107,13 +107,13 @@ Custom property | Description | Default
 <dom-module id="birch-typeahead">
   <link rel="import" type="css" href="birch-typeahead.css">
   <template>
-    <!-- Using the content tag to allow users to pass in a custom options template -->
-    <content>
+    <!-- Using the slot tag to allow users to pass in a custom options template -->
+    <slot>
       <!-- This is the default options template used if the user does not provide an override -->
       <template id="defaultTemplate">
         <paper-item>[[item.label]]</paper-item>
       </template>
-    </content>
+    </slot>
 
     <div id="container">
       <input id="input"
@@ -127,9 +127,9 @@ Custom property | Description | Default
         on-input="_handleInput"
         on-focus="_handleFocus"
         on-focusout="_handleFocusout"/>
-      <paper-menu id="optionsContainer" tabindex="-1" on-tap="_handleTap" hidden$="[[_hideOptions]]">
+      <paper-listbox id="optionsContainer" on-keydown="_handleKeydown" tabindex="-1" on-tap="_handleTap" hidden$="[[_hideOptions]]">
         <template is="dom-repeat" id="userTemplate" items="[[options]]"></template>
-      </paper-menu>
+      </paper-listbox>
     </div>
   </template>
 
@@ -281,10 +281,15 @@ Custom property | Description | Default
           template = customTemplate;
           this._usingCustomTemplate = true;
         }
-        this.$.userTemplate.templatize(template);
-        Polymer.Bind.prepareModel(this.$.userTemplate);
-        Polymer.Base.prepareModelNotifyPath(this.$.userTemplate);
-        this._handleShadyDomSetup();
+        if (Polymer.Element) { // Polymer 2.0
+          this.$.userTemplate.removeChild(this.$.userTemplate.children[0])
+          this.$.userTemplate.appendChild(template);
+        } else {
+          this.$.userTemplate.templatize(template);
+          Polymer.Bind.prepareModel(this.$.userTemplate);
+          Polymer.Base.prepareModelNotifyPath(this.$.userTemplate);
+          this._handleShadyDomSetup();
+        }
       },
 
       /*
@@ -315,9 +320,9 @@ Custom property | Description | Default
       _handleOptionsChange: function(options){
         if(!this.$.input.value) return;
         if(options.length && this.highlightFirstItem){
-          this.$.optionsContainer.select(0);
+          this.$.optionsContainer.selected = 0;
         } else {
-          this.$.optionsContainer.select(-1);
+          this.$.optionsContainer.selected = -1;
         }
         this.$.input.focus();
         this.hideOptionsAndBlur(false);
@@ -335,12 +340,22 @@ Custom property | Description | Default
       },
 
       _handleUpArrow: function(e){
-        if(this._hideOptions) return;
+        if(this._hideOptions){
+          if(this.options.length){
+            e.preventDefault();
+            this._hideOptions = false;
+          }
+          return;
+        }
         e.preventDefault();
         var optionsMenu = this.$.optionsContainer;
         var index = Math.max(optionsMenu.selected - 1, 0);
-        optionsMenu.select(index);
+        optionsMenu.selected = index;
         this.$.input.focus();
+        // Set the scroll of the options menu
+        if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
+          optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop;
+        }
       },
 
       _handleDownArrow: function(e){
@@ -357,8 +372,12 @@ Custom property | Description | Default
         if(typeof optionsMenu.selected === 'number'){
           index = Math.min(optionsMenu.selected + 1, this.options.length - 1);
         }
-        optionsMenu.select(index);
+        optionsMenu.selected = index;
         this.$.input.focus();
+        // Set the scroll of the options menu
+        if (optionsMenu.scrollTop + optionsMenu.offsetHeight < optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight) {
+          optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight - optionsMenu.offsetHeight;
+        }
       },
 
       _handleTab: function(e){
@@ -410,7 +429,7 @@ Custom property | Description | Default
           counter++;
           if(counter === 9) break;
           var parent = el.parentNode;
-          if(parent.nodeName !== 'PAPER-MENU'
+          if(parent.nodeName !== 'PAPER-LISTBOX'
             && !parent.classList.contains('selectable-content')){
             el = el.parentNode;
           } else {
@@ -434,7 +453,15 @@ Custom property | Description | Default
         }
 
         if(typeof index !== 'number' || index === -1) return;
-        optionsMenu.select(index);
+        optionsMenu.selected = index;
+        
+        // Handle the scrolling
+        if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
+          optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop;
+        } 
+        else if (optionsMenu.scrollTop + optionsMenu.offsetHeight < optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight) {
+          optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight - optionsMenu.offsetHeight;
+        }
 
         if(e && e.type === 'mouseover') return;
         var selection = this.options[index];

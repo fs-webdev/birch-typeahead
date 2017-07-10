@@ -5,7 +5,7 @@
   font-size: 14px;
 };
 
-:host ::content * {
+:host ::slotted * {
   font-family: verdana !important;
 };
 
@@ -24,9 +24,10 @@ paper-item, paper-icon-item, paper-item-body {
   @apply(--birch-typeahead-paper-item-icon-width);
 }
 
-paper-menu {
-  --paper-menu: {
-    font-family: verdana
+paper-listbox {
+  --paper-listbox: {
+    font-family: verdana;
+    @apply(--birch-typeahead-paper-listbox);
     @apply(--birch-typeahead-paper-menu);
   };
 }
