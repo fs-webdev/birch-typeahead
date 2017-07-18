@@ -45,9 +45,14 @@ paper-item > *, paper-icon-item > *, paper-item-body > * {
   @apply --birch-typeahead-input-disabled;
 }
 
+#input:focus {
+  @apply --birch-typeahead-input-focus;
+}
+
 #container {
   max-width: 300px;
   position: relative;
+  @apply(--birch-typeahead-container);
 }
 
 input {
