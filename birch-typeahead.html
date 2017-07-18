@@ -340,13 +340,7 @@ Custom property | Description | Default
       },
 
       _handleUpArrow: function(e){
-        if(this._hideOptions){
-          if(this.options.length){
-            e.preventDefault();
-            this._hideOptions = false;
-          }
-          return;
-        }
+        if(this._hideOptions) return;
         e.preventDefault();
         var optionsMenu = this.$.optionsContainer;
         var index = Math.max(optionsMenu.selected - 1, 0);

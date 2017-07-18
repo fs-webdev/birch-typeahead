@@ -21,10 +21,12 @@
     "polymer": "Polymer/polymer#^1.2.0",
     "fs-styles": "fs-webdev/fs-styles#fontStack",
     "paper-item": "^1.2.1",
-    "paper-listbox": "^2.0.0"
+    "paper-listbox": "^2.0.0",
+    "es6-promise-polyfill": "git+https://github.com/taylorhakes/promise-polyfill#6.0.2",
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
-    "web-component-tester": "^4.0.0"
+    "web-component-tester": "^4.0.0",
+    "fetch": "^2.0.2"
   }
 }
