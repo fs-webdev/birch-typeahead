@@ -278,7 +278,7 @@ Custom property | Description | Default
        */
       ready: function(){
         var template = this.$.defaultTemplate;
-        var customTemplate = Polymer.dom(this).querySelector('template');
+        var customTemplate = this._querySelector('template');
         if(customTemplate){
           template = customTemplate;
           this._usingCustomTemplate = true;
@@ -292,6 +292,12 @@ Custom property | Description | Default
           Polymer.Base.prepareModelNotifyPath(this.$.userTemplate);
           this._handleShadyDomSetup();
         }
+      },
+      _querySelector: function(selector){
+        if(this.shadowRoot){
+          return this.shadowRoot.querySelector(selector);
+        }
+        return this.querySelector(selector);
       },
 
       /*
@@ -460,11 +466,11 @@ Custom property | Description | Default
           options: this.options
         });
         this.hideOptionsAndBlur(true);
-        
+
         // Handle the scrolling
         if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
           optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop;
-        } 
+        }
         else if (optionsMenu.scrollTop + optionsMenu.offsetHeight < optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight) {
           optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight - optionsMenu.offsetHeight;
         }
