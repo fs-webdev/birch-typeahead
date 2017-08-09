@@ -20,13 +20,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       window.Polymer = {dom: 'shadow'};
     </script>
     <link rel="import" href="../../fs-demo/fs-demo.html">
+    <link rel="import" href="../../paper-item/paper-icon-item.html">
+    <link rel="import" href="../../iron-icon/iron-icon.html">
     <link rel="import" href="../birch-typeahead.html">
   </head>
   <body unresolved>
+    <style media="screen">
+      birch-typeahead {
+        margin-top: 30px;
+      }
+    </style>
     <dom-bind>
       <template is="dom-bind">
 
-        <fs-demo></fs-demo>
+        <fs-demo hide-pid hide-locale></fs-demo>
 
         <birch-typeahead
           highlight-first-item
@@ -35,31 +42,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           debounce-input-duration="250">
 
           <template>
-            <dom-if>
-              <template is="dom-if" if="[[item.icon]]">
-                <paper-icon-item>
-                  <iron-icon item-icon>
-                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="11" height="16" viewBox="0 0 11 16"><title>Artboard 1</title><path d="M5.5,15.79a.39.39,0,0,1-.37-.24.36.36,0,0,1,0-.13A7.49,7.49,0,0,0,2.9,10.31c-.37-.44-.79-.94-1.27-1.57L1.4,8.42a5,5,0,0,1-1-3.08,5.13,5.13,0,1,1,10.27,0,5.08,5.08,0,0,1-1,3.08l-.24.32h0c-.48.63-.9,1.13-1.27,1.57a7.46,7.46,0,0,0-2.21,5.08A.39.39,0,0,1,5.5,15.79ZM5.5,3a2,2,0,1,0,2,2A2,2,0,0,0,5.5,3Z" style="fill:#333331"/><rect width="11" height="16" style="fill:none"/></svg>
-                  </iron-icon>
-                  <paper-item-body two-line>
-                    <div>[[item.label]]</div>
-                    <div secondary>[[item.type]]</div>
-                  </paper-item-body>
-                </paper-icon-item>
-              </template>
-            </dom-if>
-            <dom-if>
-              <template is="dom-if" if="[[!item.icon]]">
-                <paper-icon-item>
-                  <iron-icon item-icon></iron-icon>
-                  <paper-item-body two-line>
-                    <div>[[item.label]]</div>
-                    <div secondary>[[item.type]]</div>
-                  </paper-item-body>
-                </paper-icon-item>
-              </template>
-            </dom-if>
-
+            <paper-icon-item>
+              <iron-icon hidden="[[!item.icon]]" slot="item-icon" src="location.svg" style="width: 11px;"></iron-icon>
+              <paper-item-body two-line>
+                <div>[[item.label]]</div>
+                <div secondary>[[item.type]]</div>
+              </paper-item-body>
+            </paper-icon-item>
           </template>
 
         </birch-typeahead>
