@@ -42,13 +42,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           debounce-input-duration="250">
 
           <template>
-            <paper-icon-item>
-              <iron-icon hidden="[[!item.icon]]" slot="item-icon" src="location.svg" style="width: 11px;"></iron-icon>
-              <paper-item-body two-line>
-                <div>[[item.label]]</div>
-                <div secondary>[[item.type]]</div>
-              </paper-item-body>
-            </paper-icon-item>
+            <dom-if if="[[item.icon]]">
+              <template is="dom-if" if="[[item.icon]]">
+                <paper-icon-item>
+                  <iron-icon slot="item-icon" src="location.svg" style="width: 11px;"></iron-icon>
+                  <paper-item-body two-line>
+                    <div>[[item.label]]</div>
+                    <div secondary>[[item.type]]</div>
+                  </paper-item-body>
+                </paper-icon-item>
+              </template>
+            </dom-if>
+            <dom-if if="[[!item.icon]]">
+              <template is="dom-if" if="[[!item.icon]]">
+                <paper-icon-item>
+                  <iron-icon slot="item-icon"></iron-icon>
+                  <paper-item-body two-line>
+                    <div>[[item.label]]</div>
+                    <div secondary>[[item.type]]</div>
+                  </paper-item-body>
+                </paper-icon-item>
+              </template>
+            </dom-if>
+
           </template>
 
         </birch-typeahead>
