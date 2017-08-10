@@ -1,5 +1,4 @@
 language: node_js
-sudo: true
 dist: trusty
 before_script:
   - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
