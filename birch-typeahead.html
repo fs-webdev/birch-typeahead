@@ -299,7 +299,6 @@ Custom property | Description | Default
        */
       showOptions: function(){
         this._hideOptions = false;
-        this.$.input.focus();
       },
 
       /*
@@ -326,8 +325,11 @@ Custom property | Description | Default
         } else {
           this.$.optionsContainer.selected = -1;
         }
-        this.$.input.focus();
-        this.hideOptionsAndBlur(false);
+
+        // only open the menu if the input has focus
+        if (this._hasFocus) {
+          this.hideOptionsAndBlur(false);
+        }
       },
 
       _handleKeydown: function(e){
@@ -347,7 +349,6 @@ Custom property | Description | Default
         var optionsMenu = this.$.optionsContainer;
         var index = Math.max(optionsMenu.selected - 1, 0);
         optionsMenu.selected = index;
-        this.$.input.focus();
         // Set the scroll of the options menu
         if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
           optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop;
@@ -369,7 +370,6 @@ Custom property | Description | Default
           index = Math.min(optionsMenu.selected + 1, this.options.length - 1);
         }
         optionsMenu.selected = index;
-        this.$.input.focus();
         // Set the scroll of the options menu
         if (optionsMenu.scrollTop + optionsMenu.offsetHeight < optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight) {
           optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight - optionsMenu.offsetHeight;
@@ -460,11 +460,11 @@ Custom property | Description | Default
           options: this.options
         });
         this.hideOptionsAndBlur(true);
-        
+
         // Handle the scrolling
         if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
           optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop;
-        } 
+        }
         else if (optionsMenu.scrollTop + optionsMenu.offsetHeight < optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight) {
           optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight - optionsMenu.offsetHeight;
         }
