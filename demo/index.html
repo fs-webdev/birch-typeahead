@@ -13,115 +13,120 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>birch-typeahead Demo</title>
-    <script src="../../es6-promise-polyfill/promise.min.js"></script>
-    <script src="../../fetch/fetch.js"></script>
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../es6-promise/dist/es6-promise.auto.js"></script>
+    <script src="../../fetch/fetch.js"></script>
     <script type="text/javascript">
       window.Polymer = {dom: 'shadow'};
     </script>
+    <link rel="import" href="../../fs-demo/fs-demo.html">
+    <link rel="import" href="../../paper-item/paper-icon-item.html">
+    <link rel="import" href="../../iron-icon/iron-icon.html">
     <link rel="import" href="../birch-typeahead.html">
   </head>
   <body unresolved>
-
-    <input id="sessionId" placeholder="Int SessionId"/>
-
-    <br/><br/>
-
-    <birch-typeahead
-      highlight-first-item
-      show-options-on-focus
-      placeholder="Enter a place"
-      debounce-input-duration="250">
-
-      <template>
-
-        <template is="dom-if" if="[[item.icon]]">
-          <paper-icon-item>
-            <iron-icon item-icon>
-              <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="11" height="16" viewBox="0 0 11 16"><title>Artboard 1</title><path d="M5.5,15.79a.39.39,0,0,1-.37-.24.36.36,0,0,1,0-.13A7.49,7.49,0,0,0,2.9,10.31c-.37-.44-.79-.94-1.27-1.57L1.4,8.42a5,5,0,0,1-1-3.08,5.13,5.13,0,1,1,10.27,0,5.08,5.08,0,0,1-1,3.08l-.24.32h0c-.48.63-.9,1.13-1.27,1.57a7.46,7.46,0,0,0-2.21,5.08A.39.39,0,0,1,5.5,15.79ZM5.5,3a2,2,0,1,0,2,2A2,2,0,0,0,5.5,3Z" style="fill:#333331"/><rect width="11" height="16" style="fill:none"/></svg>
-            </iron-icon>
-            <paper-item-body two-line>
-              <div>[[item.label]]</div>
-              <div secondary>[[item.type]]</div>
-            </paper-item-body>
-          </paper-icon-item>
-        </template>
-
-        <template is="dom-if" if="[[!item.icon]]">
-          <paper-icon-item>
-            <iron-icon item-icon></iron-icon>
-            <paper-item-body two-line>
-              <div>[[item.label]]</div>
-              <div secondary>[[item.type]]</div>
-            </paper-item-body>
-          </paper-icon-item>
-        </template>
-
-      </template>
-
-    </birch-typeahead>
-
-    <script>
-      var typeahead = document.getElementsByTagName('birch-typeahead')[0];
-      var sessionIdInput = document.getElementById('sessionId');
-
-      function fetchData(input){
-        var uri = 'https://integration.familysearch.org/platform/places/search';
-        var url = uri + '?q=partialName:"' + input + '"';
-        var init = {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + sessionIdInput.value
-          }
-        }
-        return fetch(url, init).then(function(res){return res.json()})
-          .catch(function(){typeahead.loading = false});
+    <style media="screen">
+      birch-typeahead {
+        margin-top: 30px;
       }
+    </style>
+    <dom-bind>
+      <template is="dom-bind">
 
-      function mapData(entries){
-        return entries.map(function (item){
-          var info = item.content.gedcomx.places[0];
-          return {
-            icon: true,
-            id: info.id,
-            label: info.display.fullName,
-            standardText: info.display.fullName,
-            type: info.display.type,
-            customText: null
+        <fs-demo hide-pid hide-locale></fs-demo>
+
+        <birch-typeahead
+          highlight-first-item
+          show-options-on-focus
+          placeholder="Enter a place"
+          debounce-input-duration="250">
+
+          <template>
+            <template is="dom-if" if="[[item.icon]]">
+              <paper-icon-item>
+                <iron-icon slot="item-icon" src="location.svg" style="width: 11px;"></iron-icon>
+                <paper-item-body two-line>
+                  <div>[[item.label]]</div>
+                  <div secondary>[[item.type]]</div>
+                </paper-item-body>
+              </paper-icon-item>
+            </template>
+            <template is="dom-if" if="[[!item.icon]]">
+              <paper-icon-item>
+                <iron-icon slot="item-icon"></iron-icon>
+                <paper-item-body two-line>
+                  <div>[[item.label]]</div>
+                  <div secondary>[[item.type]]</div>
+                </paper-item-body>
+              </paper-icon-item>
+            </template>
+          </template>
+
+        </birch-typeahead>
+
+        <script>
+          var typeahead = document.getElementsByTagName('birch-typeahead')[0];
+          var fsDemo = document.querySelector('fs-demo');
+
+          function fetchData(input){
+            var uri = '/platform/places/search';
+            var url = uri + '?q=partialName:"' + input + '"';
+            var init = {
+              headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + fsDemo.sessionId
+              }
+            }
+            return fetch(url, init).then(function(res){return res.json()})
+              .catch(function(){typeahead.loading = false});
           }
-        });
-      }
 
-      typeahead.addEventListener('birch-typeahead:input', function (e){
-        if(!e || !e.detail || !e.detail.value) return;
+          function mapData(entries){
+            return entries.map(function (item){
+              var info = item.content.gedcomx.places[0];
+              return {
+                icon: true,
+                id: info.id,
+                label: info.display.fullName,
+                standardText: info.display.fullName,
+                type: info.display.type,
+                customText: null
+              }
+            });
+          }
 
-        typeahead.loading = true;
-        fetchData(e.detail.value).then(function (data){
-          typeahead.loading = false;
-          if (!data || !data.entries) return;
+          typeahead.addEventListener('birch-typeahead:input', function (e){
+            if(!e || !e.detail || !e.detail.value) return;
 
-          var entries = mapData(data.entries);
-          entries.unshift({
-            icon: false,
-            id: null,
-            label: e.detail.value,
-            standardText: null,
-            type: null,
-            customText: e.detail.value
+            typeahead.loading = true;
+            fetchData(e.detail.value).then(function (data){
+              typeahead.loading = false;
+              if (!data || !data.entries) return;
+
+              var entries = mapData(data.entries);
+              entries.unshift({
+                icon: false,
+                id: null,
+                label: e.detail.value,
+                standardText: null,
+                type: null,
+                customText: e.detail.value
+              });
+              if(entries && entries.length){
+                typeahead.options = entries;
+              }
+            });
           });
-          if(entries && entries.length){
-            typeahead.options = entries;
-          }
-        });
-      });
 
-      typeahead.addEventListener('birch-typeahead:selected', function (e){
-        console.log('selected', e.detail.selection);
-      });
+          typeahead.addEventListener('birch-typeahead:selected', function (e){
+            console.log('selected', e.detail.selection);
+          });
 
-      typeahead.addEventListener('birch-typeahead:blur', function (e){
-        console.log('blur');
-      });
-    </script>
+          typeahead.addEventListener('birch-typeahead:blur', function (e){
+            console.log('blur');
+          });
+        </script>
+      </template>
+    </dom-bind>
   </body>
 </html>
