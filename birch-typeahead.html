@@ -312,6 +312,10 @@ Custom property | Description | Default
 
         // only open the menu if the input has focus
         if (this._hasFocus) {
+
+          // selecting the paper-listbox will focus the listbox, but we want focus
+          // to remain on the input field
+          this.$.input.focus();
           this.hideOptionsAndBlur(false);
         }
       },
