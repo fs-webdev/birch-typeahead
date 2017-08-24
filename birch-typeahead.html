@@ -279,6 +279,13 @@ Custom property | Description | Default
       },
 
       /*
+       * Programmatically hide the options list and focus the input.
+       */
+      hideOptions: function() {
+        this._hideOptions = true;
+      },
+
+      /*
        * Programmatically show the options list and focus the input.
        */
       showOptions: function(){
@@ -296,7 +303,7 @@ Custom property | Description | Default
       },
 
       _handleInput: function(){
-        if(!this.$.input.value) this._hideOptions = true;
+        if(!this.$.input.value) this.hideOptions();
         this.debounce('birch-typeahead:input', function(){
           this.fire('birch-typeahead:input', {value: this.$.input.value});
         }.bind(this), this.debounceInputDuration);
@@ -316,7 +323,7 @@ Custom property | Description | Default
           // selecting the paper-listbox will focus the listbox, but we want focus
           // to remain on the input field
           this.$.input.focus();
-          this.hideOptionsAndBlur(false);
+          this.showOptions();
         }
       },
 
@@ -347,7 +354,7 @@ Custom property | Description | Default
         if(this._hideOptions){
           if(this.options.length){
             e.preventDefault();
-            this._hideOptions = false;
+            this.showOptions();
           }
           return;
         }
@@ -381,12 +388,12 @@ Custom property | Description | Default
       _handleEscape: function(e){
         if(!this._hideOptions) e.stopPropagation();
         this.fire('birch-typeahead:cancel');
-        this.hideOptionsAndBlur(true);
+        this.hideOptions();
       },
 
       _handleFocus: function(e){
         this._hasFocus = true;
-        if(this.showOptionsOnFocus && this.$.input.value) this._hideOptions = false;
+        if(this.showOptionsOnFocus && this.$.input.value) this.showOptions();
       },
 
       // Have to use focusout event becuase IE11's blur event doesn't have e.relatedTarget
@@ -447,7 +454,7 @@ Custom property | Description | Default
           selectionIndex: index,
           options: this.options
         });
-        this.hideOptionsAndBlur(true);
+        this.hideOptions();
 
         // Handle the scrolling
         if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
