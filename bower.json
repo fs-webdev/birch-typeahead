@@ -1,6 +1,6 @@
 {
   "name": "birch-typeahead",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "authors": [
     "Anonymous <anonymous@example.com>"
   ],
@@ -10,7 +10,10 @@
     "polymer",
     "seed"
   ],
-  "main": "birch-typeahead.html",
+  "main": [
+    "birch-typeahead.html",
+    "birch-typeahead.css"
+  ],
   "license": "http://polymer.github.io/LICENSE.txt",
   "homepage": "https://github.com/<USERNAME>/seed-element/",
   "ignore": [
