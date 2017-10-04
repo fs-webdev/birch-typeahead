@@ -1,8 +1,8 @@
 [
   "/components/birch-typeahead/birch-typeahead.css",
-  "/components/paper-styles/default-theme.html",
   "/components/paper-item/paper-item-behavior.html",
   "/components/paper-item/paper-item-shared-styles.html",
-  "/components/paper-styles/typography.html",
-  "/components/paper-styles/color.html"
+  "/components/paper-styles/color.html",
+  "/components/paper-styles/default-theme.html",
+  "/components/paper-styles/typography.html"
 ]
