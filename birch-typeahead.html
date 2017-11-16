@@ -113,7 +113,12 @@ Custom property | Description | Default
         on-input="_handleInput"
         on-focus="_handleFocus"
         on-focusout="_handleFocusout"/>
-      <paper-listbox id="optionsContainer" on-keydown="_handleKeydown" tabindex="-1" on-tap="_handleTap" hidden$="[[_hideOptions]]">
+      <paper-listbox
+        id="optionsContainer"
+        on-keydown="_handleKeydown"
+        tabindex="-1"
+        on-tap="_handleTap"
+        hidden$="[[_shouldHideOptions(_hideOptions, options)]]">
         <template is="dom-repeat" id="userTemplate" items="[[options]]"></template>
       </paper-listbox>
     </div>
@@ -300,6 +305,10 @@ Custom property | Description | Default
       hideOptionsAndBlur: function(hide){
         if(hide) this._hasFocus = false;
         this._hideOptions = hide;
+      },
+
+      _shouldHideOptions: function(hideOptions, options){
+        return hideOptions || options.length === 0;
       },
 
       _handleInput: function(){
