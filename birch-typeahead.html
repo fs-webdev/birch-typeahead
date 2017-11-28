@@ -321,9 +321,9 @@ Custom property | Description | Default
       _handleOptionsChange: function(options){
         if(!this.$.input.value) return;
         if(options.length && this.highlightFirstItem){
-          this.$.optionsContainer.select(0);
+          this.$.optionsContainer.selected = 0;
         } else {
-          this.$.optionsContainer.select(-1);
+          this.$.optionsContainer.selected = -1;
         }
 
         // only open the menu if the input has focus
