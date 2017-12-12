@@ -25,9 +25,7 @@
     "fs-styles": "fs-webdev/fs-styles#3.x",
     "paper-item": "PolymerElements/paper-item#^2.0.0",
     "paper-listbox": "PolymerElements/paper-listbox#^2.0.0",
-    "polymer": "Polymer/polymer#1.9 - 2",
-    "es6-promise-polyfill": "^1.2.0",
-    "shadycss": "webcomponents/shadycss#^1.x"
+    "polymer": "Polymer/polymer#1.9 - 2"
   },
   "devDependencies": {
     "fetch": "^2.0.2",
@@ -39,9 +37,7 @@
   "variants": {
     "1.x": {
       "dependencies": {
-        "polymer": "Polymer/polymer#^1.9",
-        "iron-ajax": "1.x",
-        "fs-alert-el": "fs-webdev/fs-alert-el#2.x"
+        "polymer": "Polymer/polymer#^1.9"
       },
       "devDependencies": {
         "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
