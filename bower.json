@@ -46,13 +46,12 @@
         "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
       },
       "resolutions": {
-        "webcomponentsjs": "^0.7.0"
+        "webcomponentsjs": "^0.7.0",
+        "promise-polyfill": "^2.0.0"
       }
     }
   },
   "resolutions": {
-    "fs-styles": "3.x",
-    "webcomponentsjs": "^1.0.2",
-    "promise-polyfill": "^2.0.0"
+    "webcomponentsjs": "^1.0.2"
   }
 }
