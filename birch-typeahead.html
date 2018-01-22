@@ -191,6 +191,7 @@ Custom property | Description | Default
 
     <div id="container">
       <input id="input"
+        aria-label$="[[ariaInputLabel]]"
         autocomplete="off"
         value="{{value::input}}"
         placeholder$="[[placeholder]]"
@@ -312,6 +313,15 @@ Custom property | Description | Default
          * Input placeholder value
          */
         placeholder: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * Label for the input field
+         * (used as the aria-label attribute)
+         */
+        ariaInputLabel : {
           type: String,
           value: ''
         },
