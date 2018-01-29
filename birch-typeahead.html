@@ -134,6 +134,7 @@ Custom property | Description | Default
 
       #input {
         @apply --birch-typeahead-input;
+        padding-left: 25px;
       }
 
       #input[disabled] {
@@ -153,6 +154,13 @@ Custom property | Description | Default
       input {
         width: 100%;
         font-size: 14px;
+      }
+
+      .input-icon {
+        position: absolute;
+        width: 15px;
+        top: 7px;
+        left: 7px;
       }
 
       #optionsContainer {
@@ -190,6 +198,9 @@ Custom property | Description | Default
     </slot>
 
     <div id="container">
+      <div class="input-icon">
+        <slot name="input-icon"></slot>
+      </div>
       <input id="input"
         aria-label$="[[ariaInputLabel]]"
         autocomplete="off"
