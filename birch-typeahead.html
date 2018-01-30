@@ -190,7 +190,7 @@ Custom property | Description | Default
       }
     </style>
     <!-- Using the slot tag to allow users to pass in a custom options template -->
-    <slot>
+    <slot name="item-template">
       <!-- This is the default options template used if the user does not provide an override -->
       <template id="defaultTemplate">
         <paper-icon-item>[[item.label]]</paper-icon-item>
