@@ -28,7 +28,7 @@ You can use any of the `<paper-item>` configurations shown in paper-itme's
 docs:
 
     <birch-typeahead>
-      <template>
+      <template slot="item-template">
         <paper-item>
           <paper-item-body two-line>
             <div>[[item.label]]</div>
@@ -41,7 +41,7 @@ docs:
 You can also use custom markup:
 
     <birch-typeahead>
-      <template>
+      <template slot="item-template">
         <div>[[item.label]]</div>
       </template>
     </birch-typeahead>
@@ -58,7 +58,7 @@ rather than simply hiding them.
       placeholder="Enter a place"
       debounce-input-duration="250">
 
-      <template>
+      <template slot="item-template">
         <paper-icon-item>
           <iron-icon hidden="[[!item.icon]]" slot="item-icon" src="location.svg" style="width: 11px;"></iron-icon>
           <paper-item-body two-line>
