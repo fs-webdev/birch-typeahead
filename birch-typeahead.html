@@ -81,8 +81,9 @@ Custom property | Description | Default
 `--birch-typeahead-paper-item-icon-width`   | Pass through `--paper-item-icon-width` | `25px`
 `--birch-typeahead-paper-menu`              | Pass through `--paper-menu`            | `{}`
 `--birch-typeahead-input`                   | Style birch-typeahead's input          | `{}`
+`--birch-typeahead-input-placeholder`       | Style birch-typeahead's input placeholder text      | `{}`
 `--birch-typeahead-input-disabled`          | Style birch-typeahead's input when disabled         | `{}`
-`--birch-typeahead-input-disabled`          | Style birch-typeahead's input when focused          | `{}`
+`--birch-typeahead-input-focus`             | Style birch-typeahead's input when focused          | `{}`
 `--birch-typeahead-options-z-index`         | z-index for the options paper-menu     | `200`
 `--birch-typeahead-container                | Style the container element            |  `{}`
 
@@ -134,7 +135,6 @@ Custom property | Description | Default
 
       #input {
         @apply --birch-typeahead-input;
-        padding-left: 25px;
       }
 
       #input[disabled] {
@@ -143,6 +143,10 @@ Custom property | Description | Default
 
       #input:focus {
         @apply --birch-typeahead-input-focus;
+      }
+
+      #input::placeholder {
+        @apply --birch-typeahead-input-placeholder;
       }
 
       #container {
