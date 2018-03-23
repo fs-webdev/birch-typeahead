@@ -265,6 +265,12 @@ Custom property | Description | Default
        * @event birch-typeahead:selected
        */
 
+       /**
+        * Fired when the component is attached to the DOM
+        *
+        * @event birch-typeahead:attached
+        */
+
       properties: {
         /*
          * The value of the typeahead input. Notifies. Does not debounce.
@@ -394,6 +400,14 @@ Custom property | Description | Default
           Polymer.Base.prepareModelNotifyPath(this.$.userTemplate);
           this._handleShadyDomSetup();
         }
+      },
+
+      /**
+       * The attached method is called when the element is attached in the document
+       * Here it is used to fire an event indicating that the element was attached
+       */
+      attached: function() {
+        this.fire('birch-typeahead:attached', { el: this });
       },
 
       /*
