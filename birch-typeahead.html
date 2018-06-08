@@ -163,6 +163,10 @@ Custom property | Description | Default
         font-size: 14px;
       }
 
+      .input-wrapper {
+        position: relative;
+      }
+
       .input-icon {
         position: absolute;
         width: 15px;
@@ -210,29 +214,31 @@ Custom property | Description | Default
           <small>[[inputLabel]]</small>
         </label>
       </template>
-      <div class="input-icon">
-        <slot name="input-icon"></slot>
+      <div class="input-wrapper">
+        <div class="input-icon">
+          <slot name="input-icon"></slot>
+        </div>
+        <input id="input"
+          aria-label$="[[ariaInputLabel]]"
+          autocomplete="off"
+          value="{{value::input}}"
+          placeholder$="[[placeholder]]"
+          autofocus$="[[autofocus]]"
+          disabled$="[[disabled]]"
+          class$="[[_class('loading', loading)]]"
+          on-keydown="_handleKeydown"
+          on-input="_handleInput"
+          on-focus="_handleFocus"
+          on-focusout="_handleFocusout"/>
+        <paper-listbox
+          id="optionsContainer"
+          on-keydown="_handleKeydown"
+          tabindex="-1"
+          on-tap="_handleTap"
+          hidden$="[[_shouldHideOptions(_hideOptions, options)]]">
+          <template is="dom-repeat" id="userTemplate" items="[[options]]"></template>
+        </paper-listbox>
       </div>
-      <input id="input"
-        aria-label$="[[ariaInputLabel]]"
-        autocomplete="off"
-        value="{{value::input}}"
-        placeholder$="[[placeholder]]"
-        autofocus$="[[autofocus]]"
-        disabled$="[[disabled]]"
-        class$="[[_class('loading', loading)]]"
-        on-keydown="_handleKeydown"
-        on-input="_handleInput"
-        on-focus="_handleFocus"
-        on-focusout="_handleFocusout"/>
-      <paper-listbox
-        id="optionsContainer"
-        on-keydown="_handleKeydown"
-        tabindex="-1"
-        on-tap="_handleTap"
-        hidden$="[[_shouldHideOptions(_hideOptions, options)]]">
-        <template is="dom-repeat" id="userTemplate" items="[[options]]"></template>
-      </paper-listbox>
     </div>
   </template>
 
