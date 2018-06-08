@@ -205,6 +205,11 @@ Custom property | Description | Default
     </slot>
 
     <div id="container">
+      <template is="dom-if" if="[[inputLabel]]">
+        <label for="input">
+          <small>[[inputLabel]]</small>
+        </label>
+      </template>
       <div class="input-icon">
         <slot name="input-icon"></slot>
       </div>
@@ -342,8 +347,15 @@ Custom property | Description | Default
         },
 
         /**
-         * Label for the input field
-         * (used as the aria-label attribute)
+         * Used as the `<label/>` for the `<input/>`
+         */
+        inputLabel: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * Used as the `aria-label` attribute for the `<input/>`
          */
         ariaInputLabel : {
           type: String,
