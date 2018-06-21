@@ -210,7 +210,11 @@ Custom property | Description | Default
 
     <div id="container">
       <template is="dom-if" if="[[inputLabel]]">
-        <label for="input">
+        <!--
+          Only need this on-tap listener because the
+          for attribute isn't working in shady DOM.
+        -->
+        <label for="input" on-tap="_focusInput">
           <small>[[inputLabel]]</small>
         </label>
       </template>
@@ -453,6 +457,10 @@ Custom property | Description | Default
       hideOptionsAndBlur: function(hide){
         if(hide) this._hasFocus = false;
         this._hideOptions = hide;
+      },
+
+      _focusInput: function() {
+        this.$.input.focus();
       },
 
       _shouldHideOptions: function(hideOptions, options){
