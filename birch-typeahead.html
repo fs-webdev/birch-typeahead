@@ -382,6 +382,15 @@ Custom property | Description | Default
         },
 
         /**
+         * Way to confirm if change has occurred
+         */
+        isDirty: {
+          type: Boolean,
+          value: false,
+          notify: true
+        },
+
+        /**
          * Input's disabled value.
          * @type {Boolean}
          */
@@ -472,6 +481,7 @@ Custom property | Description | Default
         if(!this.$.input.value) this.hideOptions();
         this.debounce('birch-typeahead:input', function(){
           this.fire('birch-typeahead:input', {value: this.$.input.value});
+          this.isDirty = true;
         }.bind(this), this.debounceInputDuration);
       },
 
@@ -620,6 +630,7 @@ Custom property | Description | Default
           selectionIndex: index,
           options: this.options
         });
+        this.isDirty = true;
         this.hideOptions();
 
         // Handle the scrolling
