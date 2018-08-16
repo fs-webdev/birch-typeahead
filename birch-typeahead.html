@@ -624,7 +624,7 @@ Custom property | Description | Default
 
         if(e && e.type === 'mouseover') return;
         var selection = this.options[index];
-        this.value = selection.label;
+        selection.customText = this.value;
         this.fire('birch-typeahead:selected', {
           selection: selection,
           selectionIndex: index,
