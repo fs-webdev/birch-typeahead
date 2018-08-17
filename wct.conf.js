@@ -1,12 +1,30 @@
 module.exports = {
   "plugins": {
+    "local": {
+      "browsers": [ "chrome" ]
+    },
     "sauce": {
       "disabled": true,
       "browsers": [
-        "Windows 8.1/internet explorer",
-        "Windows 10/microsoftedge",
-        "OS X 10.12/safari"
-    ]
+        {
+          "browserName":  "chrome",
+          "platform":     "OS X 10.13"
+        },
+        {
+          "browserName":  "firefox",
+          "platform":     "OS X 10.13"
+        },
+        {
+          "browserName":  "microsoftedge",
+          "platform":     "Windows 10",
+          "version":      ""
+        },
+        {
+          "browserName":  "safari",
+          "platform":     "OS X 10.13",
+          "version":      "11"
+        },
+      ]
     }
   }
 }

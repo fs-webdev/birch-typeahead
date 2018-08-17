@@ -24,6 +24,6 @@ addons:
     packages:
       - google-chrome-stable
       - g++-4.8
+sauce_connect: true
 script:
-  - xvfb-run wct
-  - "if [ \"${TRAVIS_PULL_REQUEST}\" = \"false\" ]; then wct --plugin sauce; fi"
+  - npx wct --plugin sauce --skip-plugin local

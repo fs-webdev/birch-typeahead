@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/FamilySearchElements/birch-typeahead.svg?branch=master)](https://travis-ci.org/FamilySearchElements/birch-typeahead)
+[![Build Status](https://travis-ci.com/fs-webdev/birch-typeahead.svg?branch=master)](https://travis-ci.com/fs-webdev/birch-typeahead)
 
 # birch-typeahead
 

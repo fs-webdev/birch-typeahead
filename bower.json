@@ -31,7 +31,7 @@
     "fetch": "^2.0.2",
     "fs-demo": "fs-webdev/fs-demo#^1.9.1",
     "iron-component-page": "PolymerElements/iron-component-page#1 - 2",
-    "web-component-tester": "Polymer/web-component-tester#5 - 6",
+    "web-component-tester": "Polymer/web-component-tester#6.5.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.2"
   },
   "variants": {
