@@ -412,6 +412,11 @@ Custom property | Description | Default
         _usingCustomTemplate: {
           type: Boolean,
           value: false
+        },
+
+        isTabbing: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -549,6 +554,7 @@ Custom property | Description | Default
 
       _handleTab: function(e){
         if(this._hideOptions) return;
+        this.isTabbing = true;
         if(!this.followTabindexAfterTabSelect){
           e.preventDefault();
         }
@@ -624,7 +630,16 @@ Custom property | Description | Default
 
         if(e && e.type === 'mouseover') return;
         var selection = this.options[index];
-        selection.customText = this.value;
+        if (this.isTabbing) {
+          // There is occasion when typeahead option list is present
+          // then the user adds text and hits 'tab' before the next 
+          // list is back, causing their text to be lost. This check
+          // prevents the loss of their entered text.
+          selection.customText = this.value;
+          this.isTabbing = false;
+        } else {
+          this.value = selection.label;
+        }
         this.fire('birch-typeahead:selected', {
           selection: selection,
           selectionIndex: index,
