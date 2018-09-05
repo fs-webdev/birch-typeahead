@@ -79,6 +79,7 @@ Custom property | Description | Default
 `--birch-typeahead-paper-item`              | Pass through `--paper-item`            | `{}`
 `--birch-typeahead-paper-item-selected`     | Pass through `--paper-item-selected`   | `{}`
 `--birch-typeahead-paper-item-icon-width`   | Pass through `--paper-item-icon-width` | `25px`
+`--birch-typeahead-paper-item-body-children`| Pass through `paper-icon-item`         | `{}`
 `--birch-typeahead-paper-menu`              | Pass through `--paper-menu`            | `{}`
 `--birch-typeahead-input`                   | Style birch-typeahead's input          | `{}`
 `--birch-typeahead-input-placeholder`       | Style birch-typeahead's input placeholder text      | `{}`
@@ -135,6 +136,11 @@ Custom property | Description | Default
       paper-item > *, paper-icon-item > *, paper-item-body > * {
         white-space: normal !important;
         font-size: 14px !important;
+      }
+      paper-icon-item:not(.iron-selected) paper-item-body .standard-label {
+        white-space:normal;
+        color:#333331;
+        @apply --birch-typeahead-paper-item-body-children;
       }
 
       #input {
