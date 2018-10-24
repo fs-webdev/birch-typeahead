@@ -13,11 +13,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../wct-browser-legacy/browser.js"></script>
 
     <!-- Step 1: import the element to test -->
-    <link rel="import" href="../birch-typeahead.html">
+    <script type="module" src="../birch-typeahead.js"></script>
   </head>
   <body>
 
@@ -32,73 +32,75 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </test-fixture>
 
-    <script>
-      suite('<birch-typeahead>', function() {
+    <script type="module">
+import '../birch-typeahead.js';
+import { flush, dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+suite('<birch-typeahead>', function() {
 
-        var el;
+  var el;
 
-        setup(function() {
-          el = fixture('birch-typeahead-fixture');
-        });
+  setup(function() {
+    el = fixture('birch-typeahead-fixture');
+  });
 
-        test('placeholder', function() {
-          assert.isTrue(el.placeholder === 'Testing');
-        });
+  test('placeholder', function() {
+    assert.isTrue(el.placeholder === 'Testing');
+  });
 
-        test('highlightFirstItem', function() {
-          el.$.input.value = 'Testing';
-          el.options = [{label: 'label'}];
-          assert.isTrue(el.$.optionsContainer.selected === 0);
-        });
+  test('highlightFirstItem', function() {
+    el.$.input.value = 'Testing';
+    el.options = [{label: 'label'}];
+    assert.isTrue(el.$.optionsContainer.selected === 0);
+  });
 
-        test('_handleEscape', function() {
-          el.options = [{label: 'label'}];
-          el._handleEscape();
-          assert.isTrue(el._hideOptions);
-        });
+  test('_handleEscape', function() {
+    el.options = [{label: 'label'}];
+    el._handleEscape();
+    assert.isTrue(el._hideOptions);
+  });
 
-        test('_handleBlur', function () {
-          el._options = [{label: 'label'}];
-          el.$.input.focus();
-          el.$.input.blur();
-          Polymer.dom.flush();
-          assert.isTrue(el._hideOptions);
-        });
+  test('_handleBlur', function () {
+    el._options = [{label: 'label'}];
+    el.$.input.focus();
+    el.$.input.blur();
+    flush();
+    assert.isTrue(el._hideOptions);
+  });
 
-        test('_selectActiveItem (enter/tab)', function (done) {
-          el.addEventListener('birch-typeahead:selected', function (e){
-            assert.isTrue(e.detail.selection.label === 'label');
-            done();
-          });
-          el.$.input.value = 'testing';
-          el.options = [{label: 'label'}];
-          el._selectActiveItem();          
-        });
+  test('_selectActiveItem (enter/tab)', function (done) {
+    el.addEventListener('birch-typeahead:selected', function (e){
+      assert.isTrue(e.detail.selection.label === 'label');
+      done();
+    });
+    el.$.input.value = 'testing';
+    el.options = [{label: 'label'}];
+    el._selectActiveItem();          
+  });
 
-        test('_selectActiveItem (click/tap)', function (done) {
-          el.addEventListener('birch-typeahead:selected', function (e){
-            assert.isTrue(e.detail.selection.label === 'label');
-            done();
-          });
-          el.$.input.value = 'testing';
-          el.options = [{label: 'label'}];
-            var selected = Polymer.dom(el).querySelector('iron-selected');
-            el._selectActiveItem({currentTarget: selected});  
-        });
+  test('_selectActiveItem (click/tap)', function (done) {
+    el.addEventListener('birch-typeahead:selected', function (e){
+      assert.isTrue(e.detail.selection.label === 'label');
+      done();
+    });
+    el.$.input.value = 'testing';
+    el.options = [{label: 'label'}];
+      var selected = dom(el).querySelector('iron-selected');
+      el._selectActiveItem({currentTarget: selected});  
+  });
 
-        test('_class', function() {
-          assert.isTrue(el._class('some-class', true) === 'some-class');
-          assert.isTrue(el._class('some-class', false) === '');
-        });
+  test('_class', function() {
+    assert.isTrue(el._class('some-class', true) === 'some-class');
+    assert.isTrue(el._class('some-class', false) === '');
+  });
 
-        test('showOptions', function() {
-          el._hideOptions = true;
-          el.showOptions();
-          assert.isFalse(el._hideOptions);
-        });
+  test('showOptions', function() {
+    el._hideOptions = true;
+    el.showOptions();
+    assert.isFalse(el._hideOptions);
+  });
 
-      });
-    </script>
+});
+</script>
 
   </body>
 </html>

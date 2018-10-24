@@ -3,9 +3,7 @@ before_install:
 language: node_js
 sudo: true
 dist: trusty
-before_script:
-  - npm install -g bower web-component-tester
-  - bower install
+before_script: npm install -g web-component-tester
 env:
   global:
     - secure: gZ5vpMlc9fuKSZeMmT6xf4+FIVWxET6f6Lkp6l5Qo9vL2X/KC/bMJF1v2w5xXFLFTdm/hPUDkeQRDUBBJhGcsXhJeWIvAXdPkObV9ZPRwpDnnN1qU5lOqVIy6gFjDm2Wm6UNXcRnyP1TrGpMwbG13EUtD0rF8LZqBm3B833sKS4=
@@ -14,7 +12,7 @@ env:
 node_js: stable
 cache:
   directories:
-  - bower_components
+    - bower_components
 addons:
   firefox: latest
   apt:
@@ -25,5 +23,5 @@ addons:
       - google-chrome-stable
       - g++-4.8
 sauce_connect: true
-script:
-  - npx wct --plugin sauce --skip-plugin local
+script: npx wct --module-resolution=node --npm --plugin sauce --skip-plugin local
+

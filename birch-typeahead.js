@@ -1,0 +1,668 @@
+/**
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+/**
+A configurable typeahead component optimized for use with `<paper-item>`.
+
+`<birch-typeahead>` has a default configuration. When used as follows,
+simply set the `options` property on the element and it will display
+the `option.label` property from each item passed within a `<paper-item>`:
+
+    <birch-typeahead></birch-typeahead>
+
+You can use any of the `<paper-item>` configurations shown in paper-itme's
+docs:
+
+    <birch-typeahead>
+      <template slot="item-template">
+        <paper-item>
+          <paper-item-body two-line>
+            <div>[[item.label]]</div>
+            <div secondary>[[item.description]]</div>
+          </paper-item-body>
+        </paper-item>
+      </template>
+    </birch-typeahead>
+
+You can also use custom markup:
+
+    <birch-typeahead>
+      <template slot="item-template">
+        <div>[[item.label]]</div>
+      </template>
+    </birch-typeahead>
+
+
+Advanced usage:
+
+_IMPORTANT_: When using custom `<template>` tags with the `is="dom-if"`
+attribute, be sure to add the `restamp` attribute as shown in the following
+example to force Polymer to remove old options from the typeahead list
+rather than simply hiding them.
+
+    <birch-typeahead
+      placeholder="Enter a place"
+      debounce-input-duration="250">
+
+      <template slot="item-template">
+        <paper-icon-item>
+          <iron-icon hidden="[[!item.icon]]" slot="item-icon" src="location.svg" style="width: 11px;"></iron-icon>
+          <paper-item-body two-line>
+            <div>[[item.label]]</div>
+            <div secondary>[[item.type]]</div>
+          </paper-item-body>
+        </paper-icon-item>
+      </template>
+
+    </birch-typeahead>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--birch-typeahead-paper-item`              | Pass through `--paper-item`            | `{}`
+`--birch-typeahead-paper-item-selected`     | Pass through `--paper-item-selected`   | `{}`
+`--birch-typeahead-paper-item-icon-width`   | Pass through `--paper-item-icon-width` | `25px`
+`--birch-typeahead-paper-menu`              | Pass through `--paper-menu`            | `{}`
+`--birch-typeahead-input`                   | Style birch-typeahead's input          | `{}`
+`--birch-typeahead-input-placeholder`       | Style birch-typeahead's input placeholder text      | `{}`
+`--birch-typeahead-input-disabled`          | Style birch-typeahead's input when disabled         | `{}`
+`--birch-typeahead-input-focus`             | Style birch-typeahead's input when focused          | `{}`
+`--birch-typeahead-options-z-index`         | z-index for the options paper-menu     | `200`
+`--birch-typeahead-container                | Style the container element            |  `{}`
+
+@demo demo/index.html
+@hero hero.svg
+*/
+/*
+  FIXME(polymer-modulizer): the above comments were extracted
+  from HTML and may be out of place here. Review them and
+  then delete this comment!
+*/
+import { Base } from '@polymer/polymer/polymer-legacy.js';
+
+import 'fs-styles/fs-styles.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-item/paper-item-body.js';
+import '@polymer/paper-item/paper-icon-item.js';
+import { Polymer as Polymer$0 } from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { Element } from '@polymer/polymer/polymer-element.js';
+import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import { updateStyles } from '@polymer/polymer/lib/mixins/element-mixin.js';
+Polymer$0({
+  _template: html`
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+        font-family: verdana;
+        font-size: 14px;
+      };
+
+      :host ::slotted * {
+        font-family: verdana !important;
+      };
+
+      paper-item, paper-icon-item, paper-item-body {
+        --paper-item: {
+          font-family: verdana;
+          font-size: 14px;
+          line-height: 1.2;
+          padding-top: 2.5px;
+          padding-bottom: 2.5px;
+          @apply --birch-typeahead-paper-item;
+        };
+        --paper-item-selected: {
+          font-weight: 100 !important;
+          background-color: #ecebea !important;
+          @apply --birch-typeahead-paper-item-selected;
+        };
+        --paper-item-icon-width: 25px;
+        --paper-item-body-two-line-min-height: 20px;
+        @apply --birch-typeahead-paper-item-icon-width;
+      }
+
+      paper-listbox {
+        --paper-listbox: {
+          font-family: verdana;
+          @apply --birch-typeahead-paper-listbox;
+          @apply --birch-typeahead-paper-menu;
+        };
+      }
+
+      paper-item > *, paper-icon-item > *, paper-item-body > * {
+        white-space: normal !important;
+        font-size: 14px !important;
+      }
+
+      #input {
+        @apply --birch-typeahead-input;
+      }
+
+      #input[disabled] {
+        @apply --birch-typeahead-input-disabled;
+      }
+
+      #input:focus {
+        @apply --birch-typeahead-input-focus;
+      }
+
+      #input::placeholder {
+        @apply --birch-typeahead-input-placeholder;
+      }
+
+      #container {
+        position: relative;
+        @apply --birch-typeahead-container;
+      }
+
+      input {
+        width: 100%;
+        font-size: 14px;
+      }
+
+      .input-wrapper {
+        position: relative;
+      }
+
+      .input-icon {
+        position: absolute;
+        width: 15px;
+        top: 7px;
+        left: 7px;
+      }
+
+      #optionsContainer {
+        position: absolute;
+        padding: 0;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        cursor: pointer;
+        box-shadow: 0px 5px 10px #bab7b1;
+        -webkit-overflow-scrolling: touch;
+        z-index: 200;
+        @apply --birch-typeahead-options-z-index;
+      }
+
+      .loading {
+        background-color: #ffffff;
+        background-image: url(data:image/gif;base64,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);
+        background-size: 20px 20px;
+        background-position:right center;
+        background-repeat: no-repeat;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+    <!-- Using the slot tag to allow users to pass in a custom options template -->
+    <slot name="item-template">
+      <!-- This is the default options template used if the user does not provide an override -->
+      <template id="defaultTemplate">
+        <paper-icon-item>[[item.label]]</paper-icon-item>
+      </template>
+    </slot>
+
+    <div id="container">
+      <template is="dom-if" if="[[inputLabel]]">
+        <!--
+          Only need this on-tap listener because the
+          for attribute isn't working in shady DOM.
+        -->
+        <label for="input" on-tap="_focusInput">
+          <small>[[inputLabel]]</small>
+        </label>
+      </template>
+      <div class="input-wrapper">
+        <div class="input-icon">
+          <slot name="input-icon"></slot>
+        </div>
+        <input id="input" data-test="EventInput" aria-label\$="[[ariaInputLabel]]" autocomplete="off" value="{{value::input}}" placeholder\$="[[placeholder]]" autofocus\$="[[autofocus]]" disabled\$="[[disabled]]" class\$="[[_class('loading', loading)]]" on-keydown="_handleKeydown" on-input="_handleInput" on-focus="_handleFocus" on-focusout="_handleFocusout">
+        <paper-listbox id="optionsContainer" on-keydown="_handleKeydown" tabindex="-1" on-tap="_handleTap" hidden\$="[[_shouldHideOptions(_hideOptions, options)]]">
+          <template is="dom-repeat" id="userTemplate" items="[[options]]"></template>
+        </paper-listbox>
+      </div>
+    </div>
+`,
+
+  is: 'birch-typeahead',
+
+  /**
+   * Fired when the user changes the input value with a keypress.
+   *
+   * `detail.value` is the input value.
+   *
+   * @event birch-typeahead:input
+   */
+
+  /**
+   * Fired when the user presses escape or clicks away from the
+   * input without selecting an item.
+   *
+   * @event birch-typeahead:cancel
+   */
+
+  /**
+   * Fired when the user tabs or clicks away from the
+   * input.
+   *
+   * @event birch-typeahead:blur
+   */
+
+  /**
+   * Fired when the user selects an option by pressing enter, tab,
+   * clicking, or tapping on an item.
+   *
+   * `detail.selection` is the selected item
+   * `detail.selectionIndex` is the index in `detail.options` at which `detail.selection` can be found
+   * `detail.options` is the list of options from which the selected
+   *
+   * @event birch-typeahead:selected
+   */
+
+  /**
+   * Fired when the component is attached to the DOM
+   *
+   * @event birch-typeahead:attached
+   */
+
+  properties: {
+    /*
+     * The value of the typeahead input. Notifies. Does not debounce.
+     */
+    value: {
+      type: String,
+      value: '',
+      notify: true
+    },
+
+    /*
+     * The options set to be displayed
+     */
+    options: {
+      type: Array,
+      value: function(){ return []; },
+      observer: '_handleOptionsChange'
+    },
+
+    /**
+     * Show the loading spinner
+     */
+    loading: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Debounce firing birch-typeahead:input in milliseconds
+     */
+    debounceInputDuration: {
+      type: Number,
+      value: 0
+    },
+
+    /**
+     * Whether to always default highlight the first typeahead item.
+     * If false, the user can still use the down arrow to get to
+     * the first item listed.
+     */
+    highlightFirstItem: {
+      type: Boolean,
+      value: false
+    },
+
+    /*
+     * Show the options list with the previously available set of
+     * options upon input focus.
+     */
+    showOptionsOnFocus: {
+      type: Boolean,
+      value: false
+    },
+
+    followTabindexAfterTabSelect: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Input placeholder value
+     */
+    placeholder: {
+      type: String,
+      value: ''
+    },
+
+    /**
+     * Used as the `<label/>` for the `<input/>`
+     */
+    inputLabel: {
+      type: String,
+      value: ''
+    },
+
+    /**
+     * Used as the `aria-label` attribute for the `<input/>`
+     */
+    ariaInputLabel : {
+      type: String,
+      value: ''
+    },
+
+    /**
+     * Input autofocus value
+     */
+    autofocus: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Way to confirm if change has occurred
+     */
+    isDirty: {
+      type: Boolean,
+      value: false,
+      notify: true
+    },
+
+    /**
+     * Input's disabled value.
+     * @type {Boolean}
+     */
+    disabled: {
+      type: Boolean,
+      value: false
+    },
+
+    _hideOptions: {
+      type: Boolean,
+      value: true
+    },
+
+    _hasFocus: {
+      type: Boolean,
+      value: false
+    },
+
+    _usingCustomTemplate: {
+      type: Boolean,
+      value: false
+    },
+
+    isTabbing: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  /**
+   * The ready function templatizes either the custom template provided
+   * by the user or the default template within this component.
+   */
+  ready: function(){
+    var template = this.$.defaultTemplate;
+    var customTemplate = this.querySelector('template');
+    if(customTemplate){
+      template = customTemplate;
+      this._usingCustomTemplate = true;
+    }
+    if (Element) { // Polymer 2.0
+      this.$.userTemplate.removeChild(this.$.userTemplate.children[0])
+      this.$.userTemplate.appendChild(template);
+    } else {
+      this.$.userTemplate.templatize(template);
+      Polymer.Bind.prepareModel(this.$.userTemplate);
+      Base.prepareModelNotifyPath(this.$.userTemplate);
+      this._handleShadyDomSetup();
+    }
+  },
+
+  /**
+   * The attached method is called when the element is attached in the document
+   * Here it is used to fire an event indicating that the element was attached
+   */
+  attached: function() {
+    this.fire('birch-typeahead:attached', { el: this });
+  },
+
+  /*
+   * Programmatically hide the options list and focus the input.
+   */
+  hideOptions: function() {
+    this._hideOptions = true;
+  },
+
+  /*
+   * Programmatically show the options list and focus the input.
+   */
+  showOptions: function(){
+    this._hideOptions = false;
+  },
+
+  /*
+   * Programmatically hide the options list and blur the input.
+   *
+   * @param hide
+   */
+  hideOptionsAndBlur: function(hide){
+    if(hide) this._hasFocus = false;
+    this._hideOptions = hide;
+  },
+
+  _focusInput: function() {
+    this.$.input.focus();
+  },
+
+  _shouldHideOptions: function(hideOptions, options){
+    return hideOptions || options.length === 0;
+  },
+
+  _handleInput: function(){
+    if(!this.$.input.value) this.hideOptions();
+    this.debounce('birch-typeahead:input', function(){
+      this.fire('birch-typeahead:input', {value: this.$.input.value});
+      this.isDirty = true;
+    }.bind(this), this.debounceInputDuration);
+  },
+
+  _handleOptionsChange: function(options){
+    if(!this.$.input.value) return;
+    if(options.length && this.highlightFirstItem){
+      this.$.optionsContainer.selected = 0;
+    } else {
+      this.$.optionsContainer.selected = -1;
+    }
+
+    // only open the menu if the input has focus
+    if (this._hasFocus) {
+
+      // selecting the paper-listbox will focus the listbox, but we want focus
+      // to remain on the input field
+      this.$.input.focus();
+      this.showOptions();
+    }
+  },
+
+  _handleKeydown: function(e){
+    if(!e || !e.which) return;
+    switch(e.which){
+      case 38:  this._handleUpArrow(e);     break;
+      case 40:  this._handleDownArrow(e);   break;
+      case 9:   this._handleTab(e);         break;
+      case 13:  this._handleEnter(e);       break;
+      case 27:  this._handleEscape(e);      break;
+    }
+  },
+
+  _handleUpArrow: function(e){
+    if(this._hideOptions) return;
+    e.preventDefault();
+    var optionsMenu = this.$.optionsContainer;
+    var index = Math.max(optionsMenu.selected - 1, 0);
+    optionsMenu.selected = index;
+    // Set the scroll of the options menu
+    if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
+      optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop;
+    }
+  },
+
+  _handleDownArrow: function(e){
+    if(this._hideOptions){
+      if(this.options.length){
+        e.preventDefault();
+        this.showOptions();
+      }
+      return;
+    }
+    e.preventDefault();
+    var optionsMenu = this.$.optionsContainer;
+    var index = 0;
+    if(typeof optionsMenu.selected === 'number'){
+      index = Math.min(optionsMenu.selected + 1, this.options.length - 1);
+    }
+    optionsMenu.selected = index;
+    // Set the scroll of the options menu
+    if (optionsMenu.scrollTop + optionsMenu.offsetHeight < optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight) {
+      optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight - optionsMenu.offsetHeight;
+    }
+  },
+
+  _handleTab: function(e){
+    if(this._hideOptions) return;
+    this.isTabbing = true;
+    if(!this.followTabindexAfterTabSelect){
+      e.preventDefault();
+    }
+    this._selectActiveItem();
+  },
+
+  _handleEnter: function(e){
+    if(this._hideOptions) return;
+    e.preventDefault();
+    this._selectActiveItem();
+  },
+
+  _handleEscape: function(e){
+    if(!this._hideOptions) e.stopPropagation();
+    this.fire('birch-typeahead:cancel');
+    this.hideOptions();
+  },
+
+  _handleFocus: function(e){
+    this._hasFocus = true;
+    if(this.showOptionsOnFocus && this.$.input.value) this.showOptions();
+  },
+
+  // Have to use focusout event becuase IE11's blur event doesn't have e.relatedTarget
+  _handleFocusout: function(e){
+    var child = e.relatedTarget;
+    var parent = this.$.optionsContainer;
+    if(parent.contains(child)) return;
+    this.fire('birch-typeahead:blur');
+    this.hideOptionsAndBlur(true);
+  },
+
+  _handleTap: function(e){
+    if(!e) return;
+
+    var counter = 0;
+    var el = dom(e).rootTarget;
+    if(!this.$.optionsContainer.contains(el)) return;
+
+    // This is necessary to acommidate shady dom.
+    // Find the top-level option element, regardless
+    // of what type of element it is. It allows the
+    // user to not have to pass the on-tap handler.
+    while(el.parentNode){
+      counter++;
+      if(counter === 9) break;
+      var parent = el.parentNode;
+      if(parent.nodeName !== 'PAPER-LISTBOX'
+        && !parent.classList.contains('selectable-content')){
+        el = el.parentNode;
+      } else {
+        break;
+      }
+    }
+
+    var fakeEvent = {currentTarget: el};
+    this._selectActiveItem(fakeEvent);
+  },
+
+  _selectActiveItem: function(e){
+    var index;
+    var optionsMenu = this.$.optionsContainer;
+
+    if(e && e.currentTarget){
+      var selectedItem = e.currentTarget;
+      index = Number(optionsMenu.indexOf(selectedItem));
+    } else {
+      index = optionsMenu.selected;
+    }
+
+    if(typeof index !== 'number' || index === -1) return;
+    optionsMenu.selected = index;
+
+    if(e && e.type === 'mouseover') return;
+    var selection = this.options[index];
+    if (this.isTabbing) {
+      // There is occasion when typeahead option list is present
+      // then the user adds text and hits 'tab' before the next 
+      // list is back, causing their text to be lost. This check
+      // prevents the loss of their entered text.
+      selection.customText = this.value;
+      this.isTabbing = false;
+    } else {
+      this.value = selection.label;
+    }
+    this.fire('birch-typeahead:selected', {
+      selection: selection,
+      selectionIndex: index,
+      options: this.options
+    });
+    this.isDirty = true;
+    this.hideOptions();
+
+    // Handle the scrolling
+    if (optionsMenu.scrollTop > optionsMenu.selectedItem.offsetTop) {
+      optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop;
+    }
+    else if (optionsMenu.scrollTop + optionsMenu.offsetHeight < optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight) {
+      optionsMenu.scrollTop = optionsMenu.selectedItem.offsetTop + optionsMenu.selectedItem.offsetHeight - optionsMenu.offsetHeight;
+    }
+  },
+
+  _class: function(className, bool){
+    return bool ? className : '';
+  },
+
+  _handleShadyDomSetup: function(){
+    // Really ugly support for custom, external templates in shady dom.
+    // Only applied if a custom template is provided and shady dom is used.
+    if(!Polymer$0 || !Polymer$0.Settings) return;
+    var settings = Polymer$0.Settings;
+    if(this._usingCustomTemplate && !settings.useNativeShadow && !settings.useShadow){
+      this.$.optionsContainer.addEventListener('iron-items-changed', function (e){
+        var items = this.$.optionsContainer.items;
+        for(var i = 0; i < items.length; i++){
+          items[i].classList.add('style-scope', 'birch-typeahead');
+        }
+        updateStyles();
+      }.bind(this));
+    }
+  }
+});
