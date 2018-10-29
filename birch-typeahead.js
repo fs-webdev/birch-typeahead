@@ -89,14 +89,14 @@ Custom property | Description | Default
 */
 import { Base } from '@polymer/polymer/polymer-legacy.js';
 
-import 'fs-styles/fs-styles.js';
+import 'fs-styles';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/paper-item/paper-icon-item.js';
 import { Polymer as Polymer$0 } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { Element } from '@polymer/polymer/polymer-element.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { updateStyles } from '@polymer/polymer/lib/mixins/element-mixin.js';
 Polymer$0({
@@ -420,7 +420,7 @@ Polymer$0({
       template = customTemplate;
       this._usingCustomTemplate = true;
     }
-    if (Element) { // Polymer 2.0
+    if (PolymerElement) { // Polymer 2.0
       this.$.userTemplate.removeChild(this.$.userTemplate.children[0])
       this.$.userTemplate.appendChild(template);
     } else {
