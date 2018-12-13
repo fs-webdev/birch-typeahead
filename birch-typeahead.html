@@ -196,6 +196,11 @@ Custom property | Description | Default
         background-repeat: no-repeat;
       }
 
+      .flex-row {
+        display: flex;
+        flex-direction: row;
+      }
+
       [hidden] {
         display: none !important;
       }
@@ -214,8 +219,9 @@ Custom property | Description | Default
           Only need this on-tap listener because the
           for attribute isn't working in shady DOM.
         -->
-        <label for="input" on-tap="_focusInput">
+        <label class="flex-row" for="input" on-tap="_focusInput">
           <small>[[inputLabel]]</small>
+          <slot name="helplet-icon"></slot>
         </label>
       </template>
       <div class="input-wrapper">
