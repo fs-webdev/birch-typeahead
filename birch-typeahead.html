@@ -489,10 +489,12 @@ Custom property | Description | Default
       },
 
       _handleInput: function(){
+        this._pendingInputEvent = true;
         if(!this.$.input.value) this.hideOptions();
         this.debounce('birch-typeahead:input', function(){
           this.fire('birch-typeahead:input', {value: this.$.input.value});
           this.isDirty = true;
+          this._pendingInputEvent = false;
         }.bind(this), this.debounceInputDuration);
       },
 
@@ -624,6 +626,15 @@ Custom property | Description | Default
         var index;
         var optionsMenu = this.$.optionsContainer;
 
+        // TW-1749 this is a change from previous behavior
+        // if the typeahead list is still loading when the user
+        // leaves the field, we simply cancel our typeahead select
+        if (this.loading || this._pendingInputEvent) {
+          this.fire('birch-typeahead:cancel');
+          this.hideOptions();
+          return
+        }
+
         if(e && e.currentTarget){
           var selectedItem = e.currentTarget;
           index = Number(optionsMenu.indexOf(selectedItem));
@@ -636,16 +647,7 @@ Custom property | Description | Default
 
         if(e && e.type === 'mouseover') return;
         var selection = this.options[index];
-        if (this.isTabbing) {
-          // There is occasion when typeahead option list is present
-          // then the user adds text and hits 'tab' before the next 
-          // list is back, causing their text to be lost. This check
-          // prevents the loss of their entered text.
-          selection.customText = this.value;
-          this.isTabbing = false;
-        } else {
-          this.value = selection.label;
-        }
+        this.value = selection.label;
         this.fire('birch-typeahead:selected', {
           selection: selection,
           selectionIndex: index,
