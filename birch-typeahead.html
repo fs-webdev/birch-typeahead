@@ -599,7 +599,7 @@ Custom property | Description | Default
         if(!e) return;
 
         var counter = 0;
-        var el = Polymer.dom(e).rootTarget;
+        var el = Polymer.dom(e).localTarget;
         if(!this.$.optionsContainer.contains(el)) return;
 
         // This is necessary to acommidate shady dom.
