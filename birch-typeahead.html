@@ -610,7 +610,7 @@ Custom property | Description | Default
           counter++;
           if(counter === 9) break;
           var parent = el.parentNode;
-          if(parent.nodeName !== 'PAPER-LISTBOX'
+          if(parent.nodeName !== 'PAPER-LISTBOX' && parent.classList
             && !parent.classList.contains('selectable-content')){
             el = el.parentNode;
           } else {
