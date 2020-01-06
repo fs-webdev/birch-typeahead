@@ -1,38 +1,37 @@
 {
   "name": "birch-typeahead",
+  "description": "Polymer-based web component for adding persons and relationships.",
   "version": "2.5.5",
-  "authors": [
-    "Anonymous <anonymous@example.com>"
-  ],
-  "description": "An element providing a solution to no problem in particular.",
-  "keywords": [
-    "web-component",
-    "polymer",
-    "seed"
-  ],
   "main": [
     "birch-typeahead.html",
     "birch-typeahead.css"
   ],
-  "license": "http://polymer.github.io/LICENSE.txt",
-  "homepage": "https://github.com/<USERNAME>/seed-element/",
   "ignore": [
-    "/.*",
-    "/test/"
+    "**/.*",
+    "**/node_modules",
+    "**/bower_components",
+    "**/components",
+    "**/demo",
+    "**/test",
+    "gulpfile.js",
+    "package.json",
+    "src/",
+    "src/*",
+    "wct.*.json"
   ],
   "dependencies": {
     "es6-promise": "stefanpenner/es6-promise#^4.1.0",
-    "fs-styles": "fs-webdev/fs-styles#3 - 5",
+    "fs-styles": "fs-webdev/fs-styles#4 - 5",
     "paper-item": "PolymerElements/paper-item#^2.0.0",
     "paper-listbox": "PolymerElements/paper-listbox#^2.0.0",
-    "polymer": "Polymer/polymer#1.9 - 2"
+    "polymer": "Polymer/polymer#^2"
   },
   "devDependencies": {
     "fetch": "^2.0.2",
     "fs-demo": "fs-webdev/fs-demo#^1.9.1",
     "iron-component-page": "PolymerElements/iron-component-page#1 - 2",
     "web-component-tester": "Polymer/web-component-tester#6.5.0",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.2"
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1"
   },
   "variants": {
     "1.x": {
@@ -52,6 +51,6 @@
     }
   },
   "resolutions": {
-    "webcomponentsjs": "^1.0.2"
+    "webcomponentsjs": "^1"
   }
 }

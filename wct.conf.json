@@ -1,0 +1,56 @@
+{
+  "plugins": {
+    "local": {
+      "browsers": [ "chrome" ],
+      "skipSeleniumInstall": true
+    },
+    "sauce": {
+      "browsers": [
+        {
+          "browserName":  "safari",
+          "platform":     "OS X 10.13",
+          "version":      "11.1"
+        },
+        {
+          "browserName":  "chrome",
+          "platform":     "OS X 10.13"
+        },
+        {
+          "browserName":  "firefox",
+          "platform":     "OS X 10.13"
+        }
+      ]
+    },
+    "istanbub": {
+      "dir": "./reports/coverage",
+      "reporters": ["text", "text-summary", "lcov"],
+      "include": [
+        "**/*.html",
+        "**/*.js"
+      ],
+      "exclude": [
+        "**/*polyfill*",
+        "**/bin/*",
+        "**/bower_components/**/*",
+        "**/demo/*",
+        "**/locales/*",
+        "**/node_modules/**/*",
+        "**/reports/*",
+        "**/test/*"
+      ],
+      "thresholds": {
+        "global": {
+          "statements": 30,
+          "branches": 30,
+          "functions": 50,
+          "lines": 30
+        }
+      }
+    },
+    "size-limit": {
+      "path": "birch-typeahead.html",
+      "limitNoPolymer": "50 KB",
+      "limitNoExternals": "30 KB"
+    }
+  }
+}

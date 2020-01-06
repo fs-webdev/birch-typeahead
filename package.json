@@ -1,0 +1,74 @@
+{
+  "name": "birch-typeahead",
+  "version": "2.5.5",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fs-webdev/birch-typeahead.git"
+  },
+  "author": {
+    "name": "FamilySearch",
+    "url": "https://familysearch.org/"
+  },
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/fs-webdev/birch-typeahead/issues"
+  },
+  "homepage": "https://github.com/fs-webdev/birch-typeahead#readme",
+  "devDependencies": {
+    "fs-common-build-scripts": "github:fs-webdev/fs-common-build-scripts#semver:^2"
+  },
+  "githubAutomatorOptions": {
+    "disableSlackNotifications": true
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:staged",
+      "pre-push": "npm run lint && CI=true npm run test"
+    }
+  },
+  "lint-staged": {
+    "*.{html,js,json}": [
+      "suppress-exit-code npx eslint '**/*.html' '**/*.json' --fix",
+      "suppress-exit-code git add"
+    ]
+  },
+  "scripts": {
+    "preinstall": "git config --global url.https://github.com/.insteadOf git://github.com/",
+    "postinstall": "bower install",
+    "lint": "eslint '**/*.html' '**/*.json' && stylelint '**/*.html' '**/*.css'",
+    "lint:fix": "eslint '**/*.html' '**/*.json' --fix && stylelint '**/*.html' '**/*.css' --fix",
+    "lint:quiet": "eslint '**/*.html' '**/*.json' --quiet && stylelint '**/*.html' '**/*.css' --quiet",
+    "lint:staged": "lint-staged && node node_modules/fs-common-build-scripts/bin/pre_commit_checks.js",
+    "test": "wct --skip-plugin sauce",
+    "test:ci": "wct --configFile wct.conf.windows.json --skip-plugin local && wct --configFile wct.conf.json --skip-plugin local",
+    "test:persistent": "wct --skip-plugin sauce -p"
+  },
+  "stylelint": {
+    "about": "https://github.com/stylelint/stylelint/blob/master/docs/user-guide/rules.md#possible-errors",
+    "extends": "stylelint-config-standard",
+    "ignoreFiles": [
+      "**/bower_components/**.*",
+      "**/node_modules/**.*",
+      "**/reports/**.*"
+    ],
+    "rules": {
+      "indentation": 2,
+      "media-feature-colon-space-after": null,
+      "selector-type-no-unknown": null,
+      "unit-whitelist": [
+        "%",
+        "deg",
+        "em",
+        "px",
+        "rem",
+        "s",
+        "vh",
+        "vw",
+        "fr"
+      ]
+    }
+  }
+}
