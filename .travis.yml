@@ -1,20 +1,56 @@
+# NOTE: Not using fs-common-build-scripts common imports, because this code is a stupid public fork
 version: ~> 1.0
 
-# This Travis CI configuration makes use of imports (https://docs.travis-ci.com/user/build-config-imports/) to commonize and simplify build configuration. Utilizes shallow merge, allowing overwrites for most root level sections, and deep merge for notifications.
-import:
-  - source: fs-webdev/fs-common-build-scripts:travis/base.yml@v2
-    mode: merge
-  - source: fs-webdev/fs-common-build-scripts:travis/sauce.yml@v2
-    mode: merge
-  - source: fs-webdev/fs-common-build-scripts:travis/notifications.yml@v2
-    mode: deep_merge
-  - source: fs-webdev/fs-common-build-scripts:travis/notifications/tw-gold.yml@v2
-    mode: deep_merge
-  - source: fs-webdev/fs-common-build-scripts:travis/before.yml@v2
-    mode: merge
-  - source: fs-webdev/fs-common-build-scripts:travis/install_with_bower.yml@v2
-    mode: deep_merge_prepend
-  - source: fs-webdev/fs-common-build-scripts:travis/scripts.yml@v2
-    mode: merge
+# Branch whitelist
+branches:
+  only:
+    - master
+# Caching of bower_components & node_modules disabled, due to an increase in delayed breakages
+cache:
+  npm: false
+  directories: null
+dist: trusty
+language: node_js
+node_js:
+  - 10
+os: linux
 
-# Put anything additional you wish to have happen before running tests in an `install` section.
+before_install:
+  # Create .netrc for access to install private repositories
+  # NOTE: Use > (overwrite), not >> (append), because Travis CI helpfully creates one for us.
+  - 'echo -e "machine github.com\n  login $GITHUB_AUTH_TOKEN" > ~/.netrc'
+
+install:
+  - npm install -g bower
+  - bower install --config.interactive=false
+  - npm install
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+  slack:
+    # Custom template used because SUCCESS/FAILURE is all the way at the end by default
+    template:
+      - '%{result}: %{repository} <%{build_url}|#%{build_number}>  (<%{compare_url}|%{commit}>)'
+      - "\tin %{duration} for %{author}'s commit:"
+      - "\t\"%{commit_subject}\""
+    on_pull_requests: false
+    on_success: change
+    on_failure: change
+    rooms:
+      - 'familysearch:S4NvL7BI3BFGOMfoiSCfARk5#treeweb-gold-builds'
+
+before_script:
+  - bash node_modules/fs-common-build-scripts/bin/before_script.sh
+script:
+  # Run linting checks, suppressing warnings for cleanliness
+  - npm run lint:quiet
+  # Run tests
+  - npm run test:ci
+after_success:
+  - node node_modules/fs-common-build-scripts/bin/create_release.js
+after_failure:
+  - bash node_modules/fs-common-build-scripts/bin/report_failure_details.sh
+after_script:
+  - bash node_modules/fs-common-build-scripts/bin/after_script.sh
