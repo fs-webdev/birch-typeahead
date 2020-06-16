@@ -247,7 +247,7 @@ Custom property | Description | Default
           on-keydown="_handleKeydown"
           tabindex="-1"
           on-tap="_handleTap"
-          hidden$="[[_shouldHideOptions(_hideOptions, options)]]">
+          hidden$="[[_listCurrentlyHidden]]">
           <template is="dom-repeat" id="userTemplate" items="[[options]]"></template>
         </paper-listbox>
       </div>
@@ -421,6 +421,12 @@ Custom property | Description | Default
           value: false
         },
 
+        _listCurrentlyHidden: {
+          type: Boolean,
+          value: true,
+          observer: '_listCurrentlyHiddenObserver',
+        },
+
         isTabbing: {
           type: Boolean,
           value: false
@@ -431,6 +437,8 @@ Custom property | Description | Default
           value: false
         }
       },
+
+      observers: ['_shouldHideOptions(_hideOptions, options)'],
 
       /**
        * The ready function templatizes either the custom template provided
@@ -491,6 +499,7 @@ Custom property | Description | Default
       },
 
       _shouldHideOptions: function(hideOptions, options){
+        this._listCurrentlyHidden = hideOptions || options.length === 0;
         return hideOptions || options.length === 0;
       },
 
@@ -519,6 +528,12 @@ Custom property | Description | Default
           // to remain on the input field
           this.$.input.focus();
           this.showOptions();
+        }
+      },
+
+      _listCurrentlyHiddenObserver: function(newValue, oldValue) {
+        if (newValue === false && newValue !== oldValue) {
+          this.fire('birch-typeahead:list-opened')
         }
       },
 
